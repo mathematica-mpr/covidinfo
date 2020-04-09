@@ -1,0 +1,64 @@
+---
+title: "data_diagram"
+author: "Marisa Henry"
+date: "4/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(networkD3)
+library(htmlwidgets)
+library(here)
+```
+
+```{r}
+raw <- read_csv(here("Aggregates.csv"))
+data_cols <- names(raw)[-(1:7)] # first 6 columns aren't data source columns
+
+df <- raw %>%
+  mutate(Other = if_else(!is.na(Other), 1, NA_real_)) %>%
+  pivot_longer(cols = data_cols, 
+               names_to = "data_source", 
+               values_to = "flag") %>%
+  filter(!is.na(flag)) %>%
+  filter(data_source != `Source name`) # filter out loops 
+
+# define nodes
+nodes <- data.frame("name" = c(df$data_source, df$`Source name`)) %>% unique()
+
+# identify if nodes are primary, secondary, or tertiary sources
+nodes <- nodes %>% 
+  mutate(group = case_when(
+    (name %in% df$data_source) & (name %in% df$`Source name`) ~ "s", 
+    name %in% df$data_source ~ "p", 
+    name %in% df$`Source name` ~ "t" 
+  ))
+  
+group_cols <- 'd3.scaleOrdinal() .domain(["p", "s", "t"]) .range(["#F1B51C", "#189394", "#17A673"])'
+ 
+# define links 
+links <- df %>% 
+  select(from = data_source, to = `Source name`) %>% 
+  mutate(value = 1) %>%
+  as.data.frame() 
+  
+links$from_id <- match(links$from, nodes$name) - 1 
+links$to_id <- match(links$to, nodes$name) - 1 
+
+sn <- sankeyNetwork(Links = links, 
+                    Nodes = nodes, 
+                    Source = "from_id",
+                    Target = "to_id", 
+                    Value = "value", 
+                    NodeID = "name", 
+                    NodeGroup="group",
+                    colourScale = group_cols, 
+                    fontSize = 10, 
+                    width=1000, height=1000,
+                    sinksRight = T, 
+                    margin = list("left"=200)) 
+sn
+```
+
