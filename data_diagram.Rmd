@@ -11,6 +11,8 @@ library(tidyverse)
 library(networkD3)
 library(htmlwidgets)
 library(here)
+library(extrafont)
+extrafont::loadfonts(device = "win", quiet = TRUE)
 ```
 
 ```{r}
@@ -55,10 +57,28 @@ sn <- sankeyNetwork(Links = links,
                     NodeID = "name", 
                     NodeGroup="group",
                     colourScale = group_cols, 
-                    fontSize = 10, 
+                    fontSize = 12, 
+                    fontFamily = "Zilla Slab",
                     width=1000, height=1000,
                     sinksRight = T, 
                     margin = list("left"=200)) 
-sn
+onRender(
+  sn,
+'
+function(el,x) {
+    
+    d3.selectAll(".node text").remove()
+    d3.selectAll(".node")
+      .append("foreignObject")
+      .attr("width", 175)
+      .html(function(d) { return d.name; })
+    d3.selectAll("foreignObject")
+      .attr("x", 6 + x.options.nodeWidth)
+      .attr("y", function(d) { return (d.dy-30)/2 ; });
+}
+  
+'
+)
+
 ```
 
