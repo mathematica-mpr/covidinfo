@@ -10,14 +10,15 @@ library(networkD3)
 library(htmlwidgets)
 library(here)
 library(extrafont)
+library(DT)
 extrafont::loadfonts(device = "win", quiet = TRUE)
 ```
 
 ```{r}
-raw <- read_csv(here("data/Aggregates.csv"))
-data_cols <- names(raw)[-(1:7)] # first 6 columns aren't data source columns
+agg <- read_csv(here("data/Aggregates.csv"))
+data_cols <- names(agg)[-(1:7)] # first 6 columns aren't data source columns
 
-df <- raw %>%
+df <- agg %>%
   mutate(Other = if_else(!is.na(Other), 1, NA_real_)) %>%
   pivot_longer(cols = data_cols, 
                names_to = "data_source", 
@@ -70,3 +71,15 @@ onRender(sn,
   }'
 )
 ```
+
+```{r}
+agg_html <- agg %>%
+  select(-(data_cols)) %>% 
+  mutate(`Source name` =  paste0("<a href='",Link,"'>",`Source name`,"</a>")) %>%
+  select(-Link, -`Additional Links`, -Name) %>%
+  mutate(`Website Category` = as.factor(`Website Category`),
+         `Date added` = as.factor(`Date posted on Mathematica's website`))
+
+DT::datatable(agg_html, filter = "top", escape = FALSE)
+```
+
