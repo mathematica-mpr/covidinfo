@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>data_sources.utf8.md</title>
+
+<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.4/datatables.js"></script>
+<link href="site_libs/dt-core-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.10.16/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.10.16/js/jquery.dataTables.min.js"></script>
+<link href="site_libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="site_libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+<link href="site_libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="site_libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="site_libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">COVID Data and Resources</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="data_sources.html">Data Sources</a>
+</li>
+<li>
+  <a href="resources.html">Resources</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<hr />
+<div id="data-source-descriptions" class="section level3">
+<h3>Data source descriptions</h3>
+<hr />
+<div id="htmlwidget-56eb8342aaad3aa96eb6" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-56eb8342aaad3aa96eb6">{"x":{"filter":"top","filterHTML":"<tr>\n  <td><\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"character\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n  <\/td>\n  <td data-type=\"factor\" style=\"vertical-align: top;\">\n    <div class=\"form-group has-feedback\" style=\"margin-bottom: auto;\">\n      <input type=\"search\" placeholder=\"All\" class=\"form-control\" style=\"width: 100%;\"/>\n      <span class=\"glyphicon glyphicon-remove-circle form-control-feedback\"><\/span>\n    <\/div>\n    <div style=\"width: 100%; display: none;\">\n      <select multiple=\"multiple\" style=\"width: 100%;\" data-options=\"[&quot;30-Mar&quot;,&quot;New!&quot;]\"><\/select>\n    <\/div>\n  <\/td>\n<\/tr>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],["<a href='https://www.who.int/emergencies/diseases/novel-coronavirus-2019/situation-reports'>WHO<\/a>","<a href='https://www.cdc.gov/coronavirus/2019-ncov/cases-updates/cases-in-us.html'>CDC<\/a>","<a href='https://www.ecdc.europa.eu/en/geographical-distribution-2019-ncov-cases'>ECDC<\/a>","<a href='https://github.com/CSSEGISandData/COVID-19'>JHU<\/a>","<a href='https://coronavirus.1point3acres.com/en'>1Point3Acres<\/a>","<a href='NA'>State Health Departments<\/a>","<a href='https://ncov.dxy.cn/ncovh5/view/en_pneumonia?from=dxy&source=&link=&share='>DXY<\/a>","<a href='http://www.nhc.gov.cn/xcs/yqtb/list_gzbd.shtml'>BHC<\/a>","<a href='https://www.worldometers.info/coronavirus/'>Worldometers<\/a>","<a href='https://bnonews.com/index.php/2020/04/the-latest-coronavirus-cases/'>BNO News<\/a>","<a href='https://github.com/echen102/COVID-19-TweetIDs'>Twitter (via Github)<\/a>","<a href='https://www.doh.wa.gov/ForPublicHealthandHealthcareProviders/HealthcareProfessionsandFacilities/PublicHealthMeaningfulUse/RHINO/DataUsers'>RHINO<\/a>","<a href='https://www.kff.org/health-costs/issue-brief/state-data-and-policy-actions-to-address-coronavirus/?utm_campaign=KFF-2020-Global-Health-Policy-GHP&utm_source=hs_email&utm_medium=email&utm_content=84930378&_hsenc=p2ANqtz-_X6JrDnJqXyoIKhyA5vv4BxUPArbYsFhJD4uqD3Ol6uaSFDmD27wxaDMPmmshTC3iYE99ShRgM5tSix5rSbZKjdcuUThVT81EYv6AQVglp9_RoFZw&_hsmi=84930378#policyactions'>Kaiser<\/a>","<a href='https://www.esri.com/arcgis-blog/products/arcgis-solutions/national-government/coronavirus-response-solution-released/'>ESRI<\/a>","<a href='https://github.com/beoutbreakprepared/nCoV2019'>Healthmap<\/a>","<a href='https://www.ncbi.nlm.nih.gov/research/coronavirus'>LitCovid  <\/a>"],["Government","Government","Government","Government, non-profit, media","Government (state and county-level), non-profit (JHU), other (Covidtracking project)","Government","Government, media",null,"Government, media","Government, media","Twitter","Private","Government",null,null,"PubMed"],["This website has daily reports on the number of coronavirus cases across the world split up by geographical region and by country.","This webpage provides an overview of the number of COVID-19 cases in the U.S., overall and by state. The webpage shows the national trend in COVID-19 cases by their report date and by the estimated date of illness onset.","This is the European Center for Disease Prevention and Control's worldwide case counts of COVID-19 by country.","This is John Hopkins University's Github repository, which includes a list of their data sources in addition to datasets with case counts including WHO daily case reports and their own compilation of case counts based on individual country reports.","This website includes a dashboard with information on COVID-19 cases and testing at the county level in the U.S. and province level in Canada. It also includes information on school closures and other impacts COVID-19 has had on events around the world. It includes a link to request data, and asks users not to scrape their website.",null,"This website compiles data from the WHO, the CDC and confirmed media sources such as CNN and the BBC to show case counts globally in graph form.","This is the Chinese government's daily report counts in report format.","This is a real-time count of COVID-19 cases world-wide by country.","This website includes a real-time tally of COVID-19 cases around the world in tabular format.","This repository contains raw Twitter data on topics related to COVID-19 starting from January 28, 2020. Its data is in multiple languages, and spans the whole globe.","This link directs to data from Washington state's Rapid Health Information NetwOrk (RHINO) program, which collects real-time, population-based healthcare visit data from hospitals and clinics across the state. It is used to identify, investigate, and design data-driven, rapid responses to emerging public health threats. These data can provide insights into chronic disease burden, environmental threats, communicable disease outbreaks, and injury trends. Data is forwarded to the National Syndromic Surveillance Program (NSSP) for national surveillance. You need to request data to access it.","This website contains information on COVID-19-induced policies by state in tabular format.","This ArcGIS solution includes a collection of maps and apps intended for use by public health agencies to understand the impact of COVID-19. The solution includes applications to track cases, policy changes, and testing sites.","This is a link to compiled data collected from WHO, CDC, various local agencies and news organizations around the world related to counts of COVID-19 cases.","This is a curated literature hub for tracking up-to-date scientific information about the 2019 novel Coronavirus published in PubMed. The website shows articles by topics (for example: treatment or number of cases).  "],["Gobal, country-level","U.S. state-level","Global, country-level","Global, country-level","County, USA & Province, Canada","State-level US","Global, country-level","China, country-level","Global, country-level","Global, country-level","Global","U.S. state-level (Washington)","U.S. state-level","State-level US","Global, country-level","Global"],["Daily","Daily","Daily","Real time","Real time","Daily","Real time","Daily","Real time","Real time","Weekly","Real time","Daily","Real time","Daily","Daily"],["Number of confirmed cases; Deaths","Number of confirmed cases; Deaths","Number of confirmed cases; Deaths","Number of confirmed cases; Deaths","Number of COVID-19 new and cumulative cases; deaths; recovered by county/province; Number of tests by state/province","Positive cases; Negative cases; Pending cases; Hospitalized cases; Deaths cases","Daily new cases; Total confirmed cases; Total Deaths",null,"Total cases; New cases; Total deaths; New deaths; Total recovered; Active cases; Serious; Critical; Total cases/1M population;  Deaths/1M population; Total tests; Tests/1M population","Cases; New cases; Deaths; New Deaths; Death rate; Serious & critical; Recovered; Links","Twitter covid-related text data","Demographics and clinical data","Cases and deaths; Cases and deaths (trend data); Adopted social distancing measures; Health policy actions to reduce barriers to COVID-19 testing and treatment; Additional state-level data related to COVID-19, including testing and provider capacity","Case counts; Policies (school closings, etc.); Health resources; Vulnerability indices; more","Demographics; Case counts",null],["Text","Text","Text","Raw data","Raw data",null,"Graphs","Text","Table","Table","Raw data","Raw data","Table","Raw data","Raw data","Raw data"],[null,null,null,"Yes","Yes",null,"Yes",null,null,null,null,null,null,"Yes","Yes","Yes"],[null,null,null,null,"Yes",null,null,null,null,null,"Yes",null,null,"Yes","Yes","Yes"],["30-Mar","30-Mar",null,"30-Mar","30-Mar",null,"New!","New!","New!","New!","New!","30-Mar","30-Mar","30-Mar","New!","New!"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Data Source<\/th>\n      <th>Category<\/th>\n      <th>Description<\/th>\n      <th>Reporting level<\/th>\n      <th>Update freq./date<\/th>\n      <th>Measures reported<\/th>\n      <th>Data type<\/th>\n      <th>Dashboard view<\/th>\n      <th>API<\/th>\n      <th>Date added<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"autowidth":true,"pageLength":5,"lengthMenu":[5,10,20],"order":[],"autoWidth":false,"orderClasses":false,"columnDefs":[{"orderable":false,"targets":0}],"orderCellsTop":true,"rowCallback":"function(row, data) {\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'font-size':'80%'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

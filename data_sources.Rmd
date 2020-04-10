@@ -1,0 +1,36 @@
+---
+output: html_document
+---
+
+******
+### Data source descriptions  
+******
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(here)
+library(DT)
+
+dat <- read_csv(here("data/Data.csv"))
+```
+
+```{r}
+dat_html <- dat %>%
+  mutate(`Data Source` =  paste0("<a href='", Links,"'>",`Dataset`,"</a>")) %>%
+  mutate(API = if_else(API == 1, "Yes", "No"), 
+         `Dashboard view` = if_else(`Dashboard view` == 1, "Yes", "No"), 
+         `Date added` = as.factor(`Date added on Mathematica's website`), 
+         `Category` = `Source type`) %>%
+  select(`Data Source`, Category, Description, `Reporting level`, 
+         `Update freq./date` = `Update frequency/date`, 
+         `Measures reported`, `Data type`, `Dashboard view`, `API`, `Date added`) 
+
+DT::datatable(dat_html, filter = "top", escape = FALSE, 
+              options = list(
+                autowidth = T,
+                pageLength = 5, 
+                lengthMenu = c(5, 10, 20))) %>%
+  formatStyle(columns = c(3), fontSize = '80%')
+
+```

@@ -1,7 +1,10 @@
 ---
-title: "COVID Resources"
 output: html_document
 ---
+
+******
+### COVID data sources and outputs 
+******
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
@@ -13,8 +16,6 @@ library(extrafont)
 library(DT)
 extrafont::loadfonts(device = "win", quiet = TRUE)
 ```
-
-### COVID data sources and outputs 
 
 ```{r}
 agg <- read_csv(here("data/Aggregates.csv"))
@@ -74,16 +75,5 @@ onRender(sn,
 )
 ```
 
-### Descriptions and links to sources 
 
-```{r}
-agg_html <- agg %>%
-  select(-(data_cols)) %>% 
-  mutate(`Source name` =  paste0("<a href='",Link,"'>",`Source name`,"</a>")) %>%
-  mutate(`Website Category` = as.factor(`Website Category`),
-         `Date added` = as.factor(`Date posted on Mathematica's website`)) %>%
-  select(-Link, -`Additional Links`, -Name, -`Date posted on Mathematica's website`)
-
-DT::datatable(agg_html, filter = "top", escape = FALSE)
-```
 

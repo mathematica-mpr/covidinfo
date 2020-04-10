@@ -1,10 +1,14 @@
-name: "COVID Resources"
+name: "COVID Data and Resources"
 output_dir: "docs"
 navbar:
-  title: "COVID Resources"
+  title: "COVID Data and Resources"
   left:
-    - text: "DataSources"
+    - text: "Home"
       href: index.html
+    - text: "Data Sources"
+      href: data_sources.html
+    - text: "Resources"
+      href: resources.html
 output:
   html_document:
     theme: flatly

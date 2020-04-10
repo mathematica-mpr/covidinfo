@@ -1,0 +1,31 @@
+---
+output: html_document
+---
+
+******
+### COVID resources
+******
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(here)
+library(DT)
+
+agg <- read_csv(here("data/Aggregates.csv"))
+```
+
+```{r}
+agg_html <- agg %>%
+  mutate(Resource =  paste0("<a href='",Link,"'>",`Source name`,"</a>")) %>%
+  mutate(Category = as.factor(`Website Category`),
+         `Date added` = as.factor(`Date posted on Mathematica's website`)) %>%
+  select(Resource, Category, Description = `Description of contents`, `Date added`)
+
+DT::datatable(agg_html, filter = "top", escape = FALSE,
+              options = list(
+                autowidth = T,
+                pageLength = 5, 
+                lengthMenu = c(5, 10, 20))) %>%
+  formatStyle(columns = c(3), fontSize = '80%')
+```
