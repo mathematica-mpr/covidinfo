@@ -14,6 +14,8 @@ library(DT)
 extrafont::loadfonts(device = "win", quiet = TRUE)
 ```
 
+### COIVD data sources and outputs 
+
 ```{r}
 agg <- read_csv(here("data/Aggregates.csv"))
 data_cols <- names(agg)[-(1:7)] # first 6 columns aren't data source columns
@@ -58,7 +60,7 @@ sn <- sankeyNetwork(Links = links,
                     colourScale = group_cols, 
                     fontSize = 12, 
                     fontFamily = "Zilla Slab",
-                    width=1000, height=1000,
+                    width=1000, height=750,
                     sinksRight = T, 
                     margin = list("left"=200)) 
 
@@ -72,13 +74,15 @@ onRender(sn,
 )
 ```
 
+### Descriptions and links to sources 
+
 ```{r}
 agg_html <- agg %>%
   select(-(data_cols)) %>% 
   mutate(`Source name` =  paste0("<a href='",Link,"'>",`Source name`,"</a>")) %>%
-  select(-Link, -`Additional Links`, -Name) %>%
   mutate(`Website Category` = as.factor(`Website Category`),
-         `Date added` = as.factor(`Date posted on Mathematica's website`))
+         `Date added` = as.factor(`Date posted on Mathematica's website`)) %>%
+  select(-Link, -`Additional Links`, -Name, -`Date posted on Mathematica's website`)
 
 DT::datatable(agg_html, filter = "top", escape = FALSE)
 ```
