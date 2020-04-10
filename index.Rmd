@@ -1,12 +1,10 @@
 ---
-title: "data_diagram"
-author: "Marisa Henry"
-date: "4/7/2020"
+title: "COVID Resources"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(networkD3)
 library(htmlwidgets)
@@ -16,7 +14,7 @@ extrafont::loadfonts(device = "win", quiet = TRUE)
 ```
 
 ```{r}
-raw <- read_csv(here("Aggregates.csv"))
+raw <- read_csv(here("data/Aggregates.csv"))
 data_cols <- names(raw)[-(1:7)] # first 6 columns aren't data source columns
 
 df <- raw %>%
@@ -62,23 +60,13 @@ sn <- sankeyNetwork(Links = links,
                     width=1000, height=1000,
                     sinksRight = T, 
                     margin = list("left"=200)) 
-onRender(
-  sn,
-'
-function(el,x) {
-    
-    d3.selectAll(".node text").remove()
-    d3.selectAll(".node")
-      .append("foreignObject")
-      .attr("width", 175)
-      .html(function(d) { return d.name; })
-    d3.selectAll("foreignObject")
+
+# move labels to right
+onRender(sn,
+  'function(el,x) {
+    d3.selectAll(".node text")
       .attr("x", 6 + x.options.nodeWidth)
-      .attr("y", function(d) { return (d.dy-30)/2 ; });
-}
-  
-'
+      .attr("text-anchor", "start");
+  }'
 )
-
 ```
-
