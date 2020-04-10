@@ -14,7 +14,7 @@ library(DT)
 extrafont::loadfonts(device = "win", quiet = TRUE)
 ```
 
-### COIVD data sources and outputs 
+### COVID data sources and outputs 
 
 ```{r}
 agg <- read_csv(here("data/Aggregates.csv"))
