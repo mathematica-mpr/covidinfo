@@ -2,6 +2,18 @@
 output: html_document
 ---
 
+<style type="text/css">
+.navbar-header  {
+    margin-left: -160px !important;
+}
+.main-container {
+  max-width: 1500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+
 ******
 ### COVID resources
 ******
@@ -17,15 +29,19 @@ agg <- read_csv(here("data/Aggregates.csv"))
 
 ```{r}
 agg_html <- agg %>%
-  mutate(Resource =  paste0("<a href='",Link,"'>",`Source name`,"</a>")) %>%
   mutate(Category = as.factor(`Website Category`),
          `Date added` = as.factor(`Date posted on Mathematica's website`)) %>%
-  select(Resource, Category, Description = `Description of contents`, `Date added`)
+  mutate_all(function(x){gsub('[^ -~]', '', x)}) %>%
+  select(`Source name`, Category, Description = `Description of contents`, `Date added`)
 
 DT::datatable(agg_html, filter = "top", escape = FALSE,
               options = list(
                 autowidth = T,
+                columnDefs = list(list(width = '12px', targets = "_all")),
                 pageLength = 5, 
-                lengthMenu = c(5, 10, 20))) %>%
-  formatStyle(columns = c(3), fontSize = '80%')
+                lengthMenu = c(5, 10, 20), 
+                initComplete = JS("function(settings, json) {",
+                                  "$(this.api().table().header()).css({'font-size': '12px', 'background-color': '#2c3c54', 'color': '#fff'});",
+                                  "}"))) %>%  
+  formatStyle(columns = colnames(.$x$data), `font-size` = '12px')
 ```

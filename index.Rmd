@@ -2,32 +2,55 @@
 output: html_document
 ---
 
-******
-### COVID data sources and outputs 
+<style type="text/css">
+.navbar-header  {
+    margin-left: -160px !important;
+}
+.main-container {
+  max-width: 1500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
 ******
 
+This webpage is an interative tool to explore a curated list of COVID-19 data sources, tools, and other resources organized by [Mathematica](https://www.mathematica.org/).
+
+To explore the characteristics of these curated COVID-19 data sources, visit the [Data Sources tab]( https://mathematica-mpr.github.io/covidinfo/data_sources.html). For more detailed descriptions on all of the resources, please visit the webpage [COVID-19 Curated Data, Modeling, and Policy Resources](https://www.mathematica.org/features/covid-19-curated-data-modeling-and-policy-resources) on Mathematica's webpage. 
+
+******
+
+The diagram below visualizes the flow of data sources (on the left) to resources that compile multiple data sources (in the middle) to "final" resources (on the right). It can be used to understand what primary data sources are underlying key COVID-19 resources. 
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.align='center')
 library(tidyverse)
 library(networkD3)
 library(htmlwidgets)
 library(here)
 library(extrafont)
 library(DT)
+library(ggpubr)
+library(gridExtra)
 extrafont::loadfonts(device = "win", quiet = TRUE)
 ```
 
 ```{r}
 agg <- read_csv(here("data/Aggregates.csv"))
 data_cols <- names(agg)[-(1:7)] # first 6 columns aren't data source columns
-
+data_cols <- data_cols[-(length(data_cols))]
 df <- agg %>%
+  select(-`NAHDO?`) %>%
   mutate(Other = if_else(!is.na(Other), 1, NA_real_)) %>%
   pivot_longer(cols = data_cols, 
                names_to = "data_source", 
                values_to = "flag") %>%
   filter(!is.na(flag)) %>%
-  filter(data_source != `Source name`) # filter out loops 
+  filter(data_source != `Source name`) %>% # filter out loops 
+  mutate(`Source name` = if_else(grepl("Harvard", `Source name`), 
+                                 "Boston Children's Hosp/Harvard", 
+                                 `Source name`)) 
 
 # define nodes
 nodes <- data.frame("name" = c(df$data_source, df$`Source name`)) %>% unique()
@@ -45,7 +68,7 @@ group_cols <- 'd3.scaleOrdinal() .domain(["p", "s", "t"]) .range(["#F1B51C", "#1
 # define links 
 links <- df %>% 
   select(from = data_source, to = `Source name`) %>% 
-  mutate(value = 1) %>%
+  mutate(value = 0.5) %>%
   as.data.frame() 
   
 links$from_id <- match(links$from, nodes$name) - 1 
@@ -59,11 +82,13 @@ sn <- sankeyNetwork(Links = links,
                     NodeID = "name", 
                     NodeGroup="group",
                     colourScale = group_cols, 
-                    fontSize = 12, 
+                    fontSize = 15,  
+                    nodeWidth = 20, 
+                    nodePadding = 20,
                     fontFamily = "Zilla Slab",
-                    width=1000, height=750,
+                    width = "100%", height=750,
                     sinksRight = T, 
-                    margin = list("left"=200)) 
+                    margin = list("left"=250)) 
 
 # move labels to right
 onRender(sn,
@@ -72,8 +97,21 @@ onRender(sn,
       .attr("x", 6 + x.options.nodeWidth)
       .attr("text-anchor", "start");
   }'
-)
+) 
 ```
 
+```{r, fig.width = 12, fig.height=1, dpi = 600}
+legend <- c("Raw data" = "#F1B51C", 
+            "Data compilation" = "#189394", 
+            "'Final' resource" = "#17A673")
+legend_plot <- ggplot(as.data.frame(legend)) + 
+  geom_bar(aes(x = legend, y = 1, fill = legend), stat = "identity") +
+  scale_fill_manual(labels = names(legend), values = paste0(legend), name = "") +
+  theme(legend.position = "bottom", 
+    legend.text = element_text(family = "Zilla Slab", 
+                               size = 15, 
+                               margin = margin(r = 100, unit = 'points')))
 
+as_ggplot(ggpubr::get_legend(legend_plot))
+```
 
