@@ -29,18 +29,17 @@ dat <- read_csv(here("data/Data.csv"))
 ```{r}
 dat_html <- dat %>%
   filter(!is.na("Dataset")) %>%
-  mutate(`Data Source` =  paste0("<a href='", Links,"'>",`Dataset`,"</a>")) %>%
-  mutate(API = if_else(API == 1, "Yes", "No"), 
-         `Date added` = as.factor(`Date added on Mathematica's website`)) %>%
-  select(-Description, -Dataset, -Links, -`Date added on Mathematica's website`, 
-         `Update freq/date` = `Update frequency/date`,
+  mutate(API = if_else(API == 1, "Yes", "-"), 
+         `Data source` =  paste0("<a href='", Links,"'>",`Dataset`,"</a>"), 
+         value = "Yes") %>%
+  select(-Description, -Dataset, -Links, -NAHDO) %>%
+  pivot_wider(names_from = `Website category`, values_from = value) %>%
+  rename(`Update freq/date` =  `Update frequency/date`, 
          `Case and testing counts` = `Case count and testing rates`, 
-         `Diagnosis codes` = `Covid-19 diagnosis codes`, 
          `Capacity and needs` = `Provider capacity and patient needs`, 
          `Identifying at-risk pops.` = `Identifying at-risk populations`, 
-         `Policy and legislative actions` = `Policy and legislative actions to curb transmission`, 
-         `Other` = `Guidance documents and other resources`) %>%
-  select(`Data Source`, everything()) %>% 
+         `Policy and legislative actions` = `Policy and legislative actions to curb transmission`) %>%
+  select(`Data source`, everything()) %>% 
   replace(is.na(.), "-")
 
 DT::datatable(dat_html, filter = "top", escape = FALSE, 
