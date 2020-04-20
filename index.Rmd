@@ -17,7 +17,7 @@ output: html_document
 
 This webpage is an interative tool to explore a curated list of COVID-19 data sources, tools, and other resources organized by [Mathematica](https://www.mathematica.org/).
 
-For detailed descriptions of all data sources, please visit Mathematica’s [COVID-19 Curated Data, Modeling, and Policy Resources](https://www.mathematica.org/features/covid-19-curated-data-modeling-and-policy-resources) webpage.
+For detailed descriptions of all data sources, please visit Mathematica's [COVID-19 Curated Data, Modeling, and Policy Resources](https://www.mathematica.org/features/covid-19-curated-data-modeling-and-policy-resources) webpage.
 
 ******
 
@@ -44,7 +44,7 @@ legend_plot <- ggplot(as.data.frame(legend)) +
   scale_fill_manual(labels = names(legend), values = paste0(legend), name = "") +
   theme(legend.position = "bottom", 
     legend.text = element_text(family = "Zilla Slab", 
-                               size = 12, 
+                               size = 8, 
                                margin = margin(r = 100, unit = 'points')))
 
 as_ggplot(ggpubr::get_legend(legend_plot))
