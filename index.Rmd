@@ -17,11 +17,11 @@ output: html_document
 
 This webpage is an interative tool to explore a curated list of COVID-19 data sources, tools, and other resources organized by [Mathematica](https://www.mathematica.org/).
 
-To explore the characteristics of these curated COVID-19 data sources, visit the [Data Sources tab]( https://mathematica-mpr.github.io/covidinfo/data_sources.html). For more detailed descriptions on all of the resources, please visit the webpage [COVID-19 Curated Data, Modeling, and Policy Resources](https://www.mathematica.org/features/covid-19-curated-data-modeling-and-policy-resources) on Mathematica's webpage. 
+For detailed descriptions of all data sources, please visit Mathematica’s [COVID-19 Curated Data, Modeling, and Policy Resources](https://www.mathematica.org/features/covid-19-curated-data-modeling-and-policy-resources) webpage.
 
 ******
 
-The diagram below visualizes the flow of data sources (on the left) to resources that compile multiple data sources (in the middle) to "final" resources (on the right). It can be used to understand what primary data sources are underlying key COVID-19 resources. 
+The diagram below visualizes the flow of data sources (on the left) to resources that compile multiple data sources. It can be used to understand what primary data sources are underlying key COVID-19 resources. 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.align='center')
@@ -34,6 +34,20 @@ library(DT)
 library(ggpubr)
 library(gridExtra)
 extrafont::loadfonts(device = "win", quiet = TRUE)
+```
+
+```{r, fig.width = 12, fig.height=0.5, dpi = 600}
+legend <- c("Raw data" = "#F1B51C", 
+            "Data compilation" = "#17A673")
+legend_plot <- ggplot(as.data.frame(legend)) + 
+  geom_bar(aes(x = legend, y = 1, fill = legend), stat = "identity") +
+  scale_fill_manual(labels = names(legend), values = paste0(legend), name = "") +
+  theme(legend.position = "bottom", 
+    legend.text = element_text(family = "Zilla Slab", 
+                               size = 12, 
+                               margin = margin(r = 100, unit = 'points')))
+
+as_ggplot(ggpubr::get_legend(legend_plot))
 ```
 
 ```{r}
@@ -58,12 +72,11 @@ nodes <- data.frame("name" = c(df$data_source, df$`Source name`)) %>% unique()
 # identify if nodes are primary, secondary, or tertiary sources
 nodes <- nodes %>% 
   mutate(group = case_when(
-    (name %in% df$data_source) & (name %in% df$`Source name`) ~ "s", 
-    name %in% df$data_source ~ "p", 
-    name %in% df$`Source name` ~ "t" 
+    (name %in% df$data_source) ~ "raw", 
+     TRUE ~ "compilation" 
   ))
   
-group_cols <- 'd3.scaleOrdinal() .domain(["p", "s", "t"]) .range(["#F1B51C", "#189394", "#17A673"])'
+group_cols <- 'd3.scaleOrdinal() .domain(["raw", "compilation"]) .range(["#F1B51C", "#17A673"])'
  
 # define links 
 links <- df %>% 
@@ -100,18 +113,5 @@ onRender(sn,
 ) 
 ```
 
-```{r, fig.width = 12, fig.height=1, dpi = 600}
-legend <- c("Raw data" = "#F1B51C", 
-            "Data compilation" = "#189394", 
-            "'Final' resource" = "#17A673")
-legend_plot <- ggplot(as.data.frame(legend)) + 
-  geom_bar(aes(x = legend, y = 1, fill = legend), stat = "identity") +
-  scale_fill_manual(labels = names(legend), values = paste0(legend), name = "") +
-  theme(legend.position = "bottom", 
-    legend.text = element_text(family = "Zilla Slab", 
-                               size = 15, 
-                               margin = margin(r = 100, unit = 'points')))
 
-as_ggplot(ggpubr::get_legend(legend_plot))
-```
 
