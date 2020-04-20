@@ -72,7 +72,7 @@ nodes <- data.frame("name" = c(df$data_source, df$`Source name`)) %>% unique()
 # identify if nodes are primary, secondary, or tertiary sources
 nodes <- nodes %>% 
   mutate(group = case_when(
-    (name %in% df$data_source) ~ "raw", 
+    (name %in% df$data_source) & ! (name %in% df$`Source name`) ~ "raw", 
      TRUE ~ "compilation" 
   ))
   
