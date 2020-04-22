@@ -31,10 +31,10 @@ dat <- read_csv(here("data/Data.csv"))
 dat_html <- dat %>%
   filter(!is.na("Dataset")) %>%
   mutate(API = if_else(API == 1, "Yes", "-"), 
-         `Data source` =  paste0("<a href='", Links,"'>",`Dataset`,"</a>"), 
+         `Data source` =  paste0("<a href='", Link,"'>",`Source name`,"</a>"), 
          value = "Yes") %>%
-  select(-Description, -Dataset, -Links, -NAHDO) %>%
-  pivot_wider(names_from = `Website category`, values_from = value) %>%
+  select(-Content, -`Source name`, -Link, -NAHDO) %>%
+  pivot_wider(names_from = `Category`, values_from = value) %>%
   rename(`Update freq/date` =  `Update frequency/date`, 
          `Case and testing counts` = `Case count and testing rates`, 
          `Capacity and needs` = `Provider capacity and patient needs`, 

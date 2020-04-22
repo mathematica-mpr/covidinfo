@@ -54,9 +54,9 @@ as_ggplot(ggpubr::get_legend(legend_plot))
 ```{r}
 agg <- read_csv(here("data/Aggregates.csv"))
 data_cols <- names(agg)[-(1:7)] # first 6 columns aren't data source columns
-data_cols <- data_cols[-(length(data_cols))]
+data_cols <- data_cols[(1:(length(data_cols)-2))] # neither are the last two!
 df <- agg %>%
-  select(-`NAHDO?`) %>%
+  select(-`NAHDO?`, `Data quality notes`) %>%
   mutate(Other = if_else(!is.na(Other), 1, NA_real_)) %>%
   pivot_longer(cols = data_cols, 
                names_to = "data_source", 

@@ -30,10 +30,10 @@ agg <- read_csv(here("data/Aggregates.csv"))
 
 ```{r}
 agg_html <- agg %>%
-  mutate(Category = as.factor(`Website Category`),
+  mutate(Category = as.factor(`Category`),
          `Date added` = as.factor(`Date posted on Mathematica's website`)) %>%
   mutate_all(function(x){gsub('[^ -~]', '', x)}) %>%
-  select(`Source name`, Category, Description = `Description of contents`, `Date added`)
+  select(`Source name`, Category, Content, `Date added`)
 
 DT::datatable(agg_html, filter = "top", escape = FALSE,
               options = list(
