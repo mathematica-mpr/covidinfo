@@ -28,35 +28,38 @@ The diagram below visualizes the flow of data sources (on the left) to resources
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.align='center')
 library(tidyverse)
 library(networkD3)
+library(htmltools)
 library(htmlwidgets)
 library(here)
 library(extrafont)
 library(DT)
 library(ggpubr)
 library(gridExtra)
+library(webshot)
 extrafont::loadfonts(device = "win", quiet = TRUE)
 ```
 
 ```{r, fig.width = 12, fig.height=0.5, dpi = 600}
-legend <- c("Source data" = "#F1B51C", 
-            "Data compilation" = "#17A673")
-legend_plot <- ggplot(as.data.frame(legend)) + 
-  geom_bar(aes(x = legend, y = 1, fill = legend), stat = "identity") +
-  scale_fill_manual(labels = names(legend), values = paste0(legend), name = "") +
+legend_labels <- c("Source data" = "#F1B51C", 
+                   "Data compilation" = "#17A673")
+legend_plot <- ggplot(as.data.frame(legend_labels)) + 
+  geom_bar(aes(x = legend_labels, y = 1, fill = legend_labels), stat = "identity") +
+  scale_fill_manual(labels = names(legend_labels), values = paste0(legend_labels), name = "") +
   theme(legend.position = "bottom", 
     legend.text = element_text(family = "Zilla Slab", 
                                size = 8, 
                                margin = margin(r = 100, unit = 'points')))
 
-as_ggplot(ggpubr::get_legend(legend_plot))
+legend <- as_ggplot(ggpubr::get_legend(legend_plot))
+legend
+#ggsave(here::here("output/legend.png"), legend, device = "png")
 ```
 
 ```{r}
 agg <- read_csv(here("data/Aggregates.csv"))
-data_cols <- names(agg)[-(1:7)] # first 6 columns aren't data source columns
-data_cols <- data_cols[(1:(length(data_cols)-2))] # neither are the last two!
+data_cols <- names(agg)[-(1:7)] # first 7 columns aren't data source columns
+data_cols <- data_cols[(1:(length(data_cols)-1))] # neither is the last one!
 df <- agg %>%
-  select(-`NAHDO?`, `Data quality notes`) %>%
   mutate(Other = if_else(!is.na(Other), 1, NA_real_)) %>%
   pivot_longer(cols = data_cols, 
                names_to = "data_source", 
@@ -104,6 +107,11 @@ sn <- sankeyNetwork(Links = links,
                     sinksRight = T, 
                     margin = list("left"=250)) 
 
+saveNetwork(sn, here::here("output/sn.html"))
+#webshot(here::here("output/sn.html"),  here::here("output/sankey_network.png"))
+```
+
+```{r}
 # move labels to right
 onRender(sn,
   'function(el,x) {
@@ -111,8 +119,7 @@ onRender(sn,
       .attr("x", 6 + x.options.nodeWidth)
       .attr("text-anchor", "start");
   }'
-) 
+)
 ```
-
 
 

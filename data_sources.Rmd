@@ -33,7 +33,7 @@ dat_html <- dat %>%
   mutate(API = if_else(API == 1, "Yes", "-"), 
          `Data source` =  paste0("<a href='", Link,"'>",`Source name`,"</a>"), 
          value = "Yes") %>%
-  select(-Content, -`Source name`, -Link, -NAHDO) %>%
+  select(-Content, -`Source name`, -Link, -`Internal?`) %>%
   pivot_wider(names_from = `Category`, values_from = value) %>%
   rename(`Update freq/date` =  `Update frequency/date`, 
          `Case and testing counts` = `Case count and testing rates`, 
