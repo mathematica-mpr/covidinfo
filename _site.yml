@@ -7,8 +7,6 @@ navbar:
       href: index.html
     - text: "Data Sources"
       href: data_sources.html
-    - text: ""
-      href: resources.html
 output:
   html_document:
     theme: flatly
