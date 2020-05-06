@@ -24,22 +24,19 @@ library(tidyverse)
 library(here)
 library(DT)
 
-dat <- read_csv(here("data/Data.csv"))
+df <- read_csv(here("data/covid_resources.csv"))
 ```
 
 ```{r}
-dat_html <- dat %>%
-  filter(!is.na("Dataset")) %>%
-  mutate(API = if_else(API == 1, "Yes", "-"), 
-         `Data source` =  paste0("<a href='", Link,"'>",`Source name`,"</a>"), 
+dat_html <- df %>%
+  select(Category, Title, `Source name`,  Link, 
+         `Date posted on Mathematica's website`, Coverage, 
+         Aggregation, `Update frequency/date`, API) %>%
+  filter(!is.na(`Source name`)) %>%
+  mutate(`Data source` =  paste0("<a href='", Link,"'>",`Source name`,"</a>"), 
          value = "Yes") %>%
-  select(-Content, -`Source name`, -`Data quality notes`, -Link, -`Internal?`) %>%
+  select(-`Source name`, -Link) %>%
   pivot_wider(names_from = `Category`, values_from = value) %>%
-  rename(`Update freq/date` =  `Update frequency/date`, 
-         `Case and testing counts` = `Case count and testing rates`, 
-         `Capacity and needs` = `Provider capacity and patient needs`, 
-         `Identifying at-risk pops.` = `Identifying at-risk populations`, 
-         `Policy and legislative actions` = `Policy and legislative actions to curb transmission`) %>%
   select(`Data source`, everything()) %>% 
   replace(is.na(.), "-")
 
@@ -52,5 +49,5 @@ DT::datatable(dat_html, filter = "top", escape = FALSE,
                 initComplete = JS("function(settings, json) {",
                                   "$(this.api().table().header()).css({'font-size': '12px', 'background-color': '#2c3c54', 'color': '#fff'});",
                                   "}"))) %>%  
-  formatStyle(columns = colnames(.$x$data), `font-size` = '12px')
+  formatStyle(columns = colnames(.$x$data), `font-size` = '10px')
 ```

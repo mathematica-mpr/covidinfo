@@ -56,34 +56,42 @@ legend
 ```
 
 ```{r}
-agg <- read_csv(here("data/Aggregates.csv"))
-data_cols <- names(agg)[-(1:7)] # first 7 columns aren't data source columns
-data_cols <- data_cols[(1:(length(data_cols)-1))] # neither is the last one!
-df <- agg %>%
+df <- read_csv(here("data/covid_resources.csv"))
+
+# identify data source flag columns 
+data_cols <- df %>% 
+  select(-Action, -Category, - Title, -`Source name`, 
+         -Link, -`Data quality notes`, -`Content`, 
+         -`Date posted on Mathematica's website`, -Coverage, 
+         -Aggregation, -`Update frequency/date`, -API, -`Internal?`) %>%
+  names(.)
+
+sn_df <- df %>%
+  select(`Source name`, data_cols) %>% 
   mutate(Other = if_else(!is.na(Other), 1, NA_real_)) %>%
   pivot_longer(cols = data_cols, 
                names_to = "data_source", 
                values_to = "flag") %>%
   filter(!is.na(flag)) %>%
   filter(data_source != `Source name`) %>% # filter out loops 
-  mutate(`Source name` = if_else(grepl("Harvard", `Source name`), 
-                                 "Boston Children's Hosp/Harvard", 
-                                 `Source name`)) 
+  group_by(`Source name`) %>%
+  mutate(total_sources = n()) %>%
+  filter(total_sources > 1) # filter out those with only one link for visualization
 
 # define nodes
-nodes <- data.frame("name" = c(df$data_source, df$`Source name`)) %>% unique()
+nodes <- data.frame("name" = c(sn_df$data_source, sn_df$`Source name`)) %>% unique()
 
 # identify if nodes are primary, secondary, or tertiary sources
 nodes <- nodes %>% 
   mutate(group = case_when(
-    (name %in% df$data_source) & ! (name %in% df$`Source name`) ~ "raw", 
+    (name %in% sn_df$data_source) & ! (name %in% sn_df$`Source name`) ~ "raw", 
      TRUE ~ "compilation" 
   ))
   
 group_cols <- 'd3.scaleOrdinal() .domain(["raw", "compilation"]) .range(["#F1B51C", "#17A673"])'
  
 # define links 
-links <- df %>% 
+links <- sn_df %>% 
   select(from = data_source, to = `Source name`) %>% 
   mutate(value = 0.5) %>%
   as.data.frame() 
