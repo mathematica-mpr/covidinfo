@@ -30,10 +30,10 @@ df <- read_csv(here("data/covid_resources.csv"))
 ```{r}
 dat_html <- df %>%
   select(Category, Title, `Source name`,  Link, 
-         `Date posted on Mathematica's website`, Coverage, 
-         Aggregation, `Update frequency/date`, API) %>%
+         Coverage, Aggregation, `Update frequency/date`, API) %>%
   filter(!is.na(`Source name`)) %>%
-  mutate(`Data source` =  paste0("<a href='", Link,"'>",`Source name`,"</a>"), 
+  mutate(API = if_else(API == 1, "Yes", "-"), 
+         `Data source` =  paste0("<a href='", Link,"'>",`Source name`,"</a>"), 
          value = "Yes") %>%
   select(-`Source name`, -Link) %>%
   pivot_wider(names_from = `Category`, values_from = value) %>%
