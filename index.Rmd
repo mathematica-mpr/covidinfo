@@ -73,15 +73,20 @@ sn_df <- df %>%
                names_to = "data_source", 
                values_to = "flag") %>%
   filter(!is.na(flag)) %>%
-  filter(data_source != `Source name`) %>% # filter out loops 
+  # filter out loops 
+  filter(tolower(data_source) != tolower(`Source name`)) %>% 
+  # filter out those with only one link for visualization
+  group_by(data_source) %>%
+  mutate(total_sources = n()) %>%
+  filter(total_sources > 1) %>%
   group_by(`Source name`) %>%
   mutate(total_sources = n()) %>%
-  filter(total_sources > 1) # filter out those with only one link for visualization
+  filter(total_sources > 1)
 
 # define nodes
 nodes <- data.frame("name" = c(sn_df$data_source, sn_df$`Source name`)) %>% unique()
 
-# identify if nodes are primary, secondary, or tertiary sources
+# identify if nodes are raw data or compilations
 nodes <- nodes %>% 
   mutate(group = case_when(
     (name %in% sn_df$data_source) & ! (name %in% sn_df$`Source name`) ~ "raw", 
