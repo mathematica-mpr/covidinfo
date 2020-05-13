@@ -75,10 +75,10 @@ sn_df <- df %>%
   filter(!is.na(flag)) %>%
   # filter out loops 
   filter(tolower(data_source) != tolower(`Source name`)) %>% 
-  # filter out those with only one link for visualization
+  # filter out those with only "other" source 
   group_by(`Source name`) %>%
   mutate(total_sources = n()) %>%
-  filter(total_sources > 1)
+  filter(! (total_sources == 1 & data_source == "Other"))
 
 # define nodes
 nodes <- data.frame("name" = c(sn_df$data_source, sn_df$`Source name`)) %>% unique()
