@@ -5,18 +5,15 @@ title: "COVID-19 Data and Resources"
 
 <style type="text/css">
 .navbar-header  {
-    margin-left: -160px !important;
+    margin-left: -280px !important;
 }
 .main-container {
-  max-width: 1500px;
+  max-width: 1750px;
   margin-left: auto;
   margin-right: auto;
 }
 </style>
 
-******
-### COVID data sources 
-******
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
@@ -29,7 +26,7 @@ df <- read_csv(here("data/covid_resources.csv"))
 
 ```{r}
 dat_html <- df %>%
-  select(Category, Title, `Source name`,  Link, 
+  select(Category, `Source name`,  Link, 
          Coverage, Aggregation, `Update frequency/date`, API) %>%
   filter(!is.na(`Source name`)) %>%
   mutate(API = if_else(API == 1, "Yes", "-"), 
@@ -38,7 +35,10 @@ dat_html <- df %>%
   select(-`Source name`, -Link) %>%
   pivot_wider(names_from = `Category`, values_from = value) %>%
   select(`Data source`, everything()) %>% 
-  replace(is.na(.), "-")
+  replace(is.na(.), "-") %>%
+  mutate(Coverage = tools::toTitleCase(Coverage), 
+         Aggregation = tools::toTitleCase(Aggregation), 
+         `Update frequency/date` = tools::toTitleCase(`Update frequency/date`))
 
 DT::datatable(dat_html, filter = "top", escape = FALSE, 
               options = list(
