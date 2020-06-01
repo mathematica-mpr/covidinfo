@@ -42,7 +42,7 @@ dat_html <- df %>%
 
 DT::datatable(dat_html, filter = "top", escape = FALSE, 
               options = list(
-                autoWidth = TRUE,
+                autoWidth = FALSE,
                 columnDefs = list(list(width = '12px', targets = "_all")),
                 pageLength = 15, 
                 lengthMenu = c(15, 30), 
