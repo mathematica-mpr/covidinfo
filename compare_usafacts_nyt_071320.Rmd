@@ -31,8 +31,9 @@ extrafont::loadfonts(device = "win",  quiet = TRUE)
 # format table names
 format_names <- function(dat){
   n <- names(dat)
+  n <- ifelse(tolower(n)=="fips", "FIPS", n)
   n <- gsub("_", " ", n)
-  n <- gsub("^(.)","\\U\\1", tolower(n), perl = TRUE)
+  n <- gsub("^(.)","\\U\\1", n, perl = TRUE)
   
   dat %>% set_names(n)
 }
@@ -84,6 +85,10 @@ usafacts_total = full_join(usafacts_total_cases, usafacts_total_deaths, by="date
 ```
 
 ### Cases
+The following plot shows daily cumulative case counts for each of the two data sources, as well as the difference in case counts (NYT-USAFacts) and percentage difference in case counts (NYT-USAFacts)/USAFacts over time (approximately 3,000 cases on 7/13). The difference in case counts between the two sources has grown proportionally with the number of cases.
+
+While the case counts reported in the two sources are similar. NYT tends to report about 1% more cases than USAFacts.
+
 ```{r, fig.height=8, fig.width=10}
 bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source, cases) %>% 
   filter(date>=date("2020-04-01")) %>%
@@ -110,6 +115,10 @@ bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source, case
 ```
 
 ### Deaths
+The following plot shows daily cumulative death counts for each of the two data sources, as well as the difference in death counts (NYT-USAFacts) and percentage difference in death counts (NYT-USAFacts)/USAFacts over time.
+
+While the death counts reported in the two sources are similar. NYT has tends to report about 1% more cases than USAFacts. The difference in death counts between the two sources has stayed relatively steady since early May.
+
 ```{r, fig.height=8, fig.width=10}
 bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, deaths) %>% 
   filter(date>=date("2020-04-01")) %>%
@@ -167,7 +176,7 @@ bind_rows(nyt_unknown, usafacts_unknown) %>% filter(cases>0) %>%
   
   ggplot(aes(x=state, y=val, fill=source)) +
   geom_col(position = position_dodge()) + 
-  coord_flip() + facet_grid(.~var) +
+  coord_flip() + facet_grid(.~var, scale="free") +
 
   xlab("State") + ylab("Number of unallocated cases") + labs(fill="") +
   theme_mpr() + 
@@ -255,18 +264,20 @@ bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(source="NYT"),
 
 ### Counties where the case count in USAFacts differs from the case count in NYT by more than 5% {.tabset}
 
+Percentage difference is defined relative to USAFacts ([NYT-USAFacts]/USAFacts).
+
 ```{r}
 case_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(source="NYT"),
           dat_usafacts_cases %>% select(date, fips, cases) %>% mutate(source="USAFacts")) %>%
   filter(date==max(date)) %>%
   spread(source, cases) %>%
   mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>%
-  mutate(percent_error = ifelse(NYT==0, ifelse(USAFacts==0, 0, Inf), (USAFacts-NYT)/NYT),
-         percent_error = round(percent_error, 3)) %>% 
-  filter(percent_error!=0) %>% arrange(desc(abs(percent_error))) %>%
+    mutate(percent_difference = ifelse(USAFacts==0, ifelse(NYT==0, 0, Inf), (NYT-USAFacts)/USAFacts),
+         percent_difference = round(percent_difference, 3)) %>% 
+  filter(percent_difference!=0) %>% arrange(desc(abs(percent_difference))) %>%
   left_join(dat_usafacts_cases %>% select(state, county, fips) %>% distinct(), by="fips") %>%
-  select(state, county, fips, NYT, USAFacts, percent_error) %>%
-  filter(abs(percent_error)>.05, NYT>0, USAFacts>0) 
+  select(state, county, fips, NYT, USAFacts, percent_difference) %>%
+  filter(abs(percent_difference)>.05, NYT>0, USAFacts>0) 
 ```
 
 #### Plot
@@ -292,7 +303,7 @@ The following table is arranged in descending order of the absolute value of the
 case_diff_tab %>% 
   arrange(desc(abs(NYT-USAFacts))) %>%
   rename(county_USAFacts=county) %>%
-  mutate(percent_error = paste0(round(100*percent_error,0),"%")) %>% 
+  mutate(percent_difference = paste0(round(100*percent_difference,0),"%")) %>% 
   format_names() %>% pandoc.table(split.table=Inf)
 ```
 
@@ -316,18 +327,20 @@ bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(source="NYT"),
 
 ### Counties where the death count in USAFacts differs from the death count in NYT by more than 5% {.tabset}
 
+Percentage difference is defined relative to USAFacts ([NYT-USAFacts]/USAFacts).
+
 ```{r}
 death_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(source="NYT"),
           dat_usafacts_deaths %>% select(date, fips, deaths) %>% mutate(source="USAFacts")) %>%
   filter(date==max(date)) %>%
   spread(source, deaths) %>%
   mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>%
-  mutate(percent_error = ifelse(NYT==0, ifelse(USAFacts==0, 0, Inf), (USAFacts-NYT)/NYT),
-         percent_error = round(percent_error, 3)) %>% 
-  filter(percent_error!=0) %>% arrange(desc(abs(percent_error))) %>%
+  mutate(percent_difference = ifelse(USAFacts==0, ifelse(NYT==0, 0, Inf), (NYT-USAFacts)/USAFacts),
+         percent_difference = round(percent_difference, 3)) %>% 
+  filter(percent_difference!=0) %>% arrange(desc(abs(percent_difference))) %>%
   left_join(dat_usafacts_deaths %>% select(state, county, fips) %>% distinct(), by="fips") %>%
-  select(state, county, fips, NYT, USAFacts, percent_error) %>%
-  filter(abs(percent_error)>.05, NYT>0, USAFacts>0)
+  select(state, county, fips, NYT, USAFacts, percent_difference) %>%
+  filter(abs(percent_difference)>.05, NYT>0, USAFacts>0)
 ```
 
 #### Plot
@@ -354,7 +367,7 @@ The following table is arranged in descending order of the absolute value of the
 death_diff_tab %>% 
   arrange(desc(abs(NYT-USAFacts))) %>%
   rename(county_USAFacts=county) %>%
-  mutate(percent_error = paste0(round(100*percent_error,0),"%")) %>% 
+  mutate(percent_difference = paste0(round(100*percent_difference,0),"%")) %>% 
   format_names() %>% pandoc.table(split.table=Inf)
 ```
 
