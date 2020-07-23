@@ -7,7 +7,7 @@ navbar:
       href: index.html
     - text: "Data Sources"
       href: data_sources.html
-    - text: "Case study: A Comparison between two data sources for case and death counts"
+    - text: "Case study"
       href: compare_usafacts_nyt_071320.html
 output:
   html_document:
