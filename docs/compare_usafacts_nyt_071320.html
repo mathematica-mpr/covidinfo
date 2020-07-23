@@ -1,0 +1,3295 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>A Comparison of COVID case and death counts from USAFacts and New York Times (7/13/20)</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">COVID-19 Data and Resources</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="data_sources.html">Data Sources</a>
+</li>
+<li>
+  <a href="compare_usafacts_nyt_071320.html">Case study: A Comparison between two data sources for case and death counts</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">A Comparison of COVID case and death counts from USAFacts and New York Times (7/13/20)</h1>
+
+</div>
+
+
+<style type="text/css">
+.navbar-header  {
+    margin-left: -280px !important;
+}
+.main-container {
+  max-width: 1750px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<div id="section" class="section level1 tabset">
+<h1></h1>
+<p>There are several national-level aggregations of county-level COVID case and death data that researchers have to choose from. Each source has its own data collection methods, which can result in variations in numbers across sources.</p>
+<p>On this page, we explore to what extent the following two data sources for county-level cumulative counts of confirmed COVID-19 cases and deaths are comparable. In our comparison, we focus on cumulative case counts as of 7/13/2020 (data accessed on 7/14/2020).</p>
+<p><strong>New York Times (NYT)</strong>: The New York times keeps maintains a <a href="https://github.com/nytimes/covid-19-data">data set</a> reporting daily cumulative counts of COVID-19 cases and deaths.</p>
+<p><strong>USAFacts</strong>: USAFacts also maintains a <a href="https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/">data set</a> reporting daily cumulative counts of COVID-19 cases and deaths.</p>
+<p>The data for each of the two sources are gathered from state and local public health agencies, however there are some differences between the two sources in how the data is reported. This <a href="https://source.opennews.org/articles/comparison-four-major-covid-19-data-sources/">blog post</a> reviews some of the major differences, for example:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Time of update:</strong> NYT is updated once daily around 8am EDT with case and death counts from the previous day. USAFacts is updated once daily around 12am PDT (3am EDT) for cases from the previous day. Because USAFacts is updated before NYT, USAFacts generally reports lower case and death counts than NYT for a given day.</p></li>
+<li><p><strong>Geographic exceptions:</strong> NYT reports cases for all five boroughs of New York city as a single area (“New York City”). USAFacts reports New York City cases separately for all five counties, though also has a category for “New York City Unallocated/Probable”. NYT reports all case for Kansas City in a single group (“Kansas City”). The case counts for the four counties that include parts of Kansas City represent only the parts of the counties that are outside of Kansas City. In the USAFacts data, all Kansas City cases are allocated to Jackson County.</p></li>
+<li><p><strong>Other differences:</strong> See the blog post linked above for more information on the differences between the data sources.</p></li>
+</ol>
+<div id="section-1-comparison-of-total-national-cases-and-deaths-over-time" class="section level2 tabset">
+<h2>Section 1: Comparison of total national cases and deaths over time</h2>
+<p>Date updated: 7/13/2020 (data downloaded: 7/14/2020)</p>
+<div id="cases" class="section level3">
+<h3>Cases</h3>
+<p>The following plot shows daily cumulative case counts for each of the two data sources, as well as the difference in case counts (NYT-USAFacts) and percentage difference in case counts (NYT-USAFacts)/USAFacts over time (approximately 3,000 cases on 7/13). The difference in case counts between the two sources has grown proportionally with the number of cases.</p>
+<p>While the case counts reported in the two sources are similar. NYT tends to report about 1% more cases than USAFacts.</p>
+<p><img src="compare_usafacts_nyt_071320_files/figure-html/unnamed-chunk-2-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="deaths" class="section level3">
+<h3>Deaths</h3>
+<p>The following plot shows daily cumulative death counts for each of the two data sources, as well as the difference in death counts (NYT-USAFacts) and percentage difference in death counts (NYT-USAFacts)/USAFacts over time.</p>
+<p>While the death counts reported in the two sources are similar. NYT has tends to report about 1% more cases than USAFacts. The difference in death counts between the two sources has stayed relatively steady since early May.</p>
+<p><img src="compare_usafacts_nyt_071320_files/figure-html/unnamed-chunk-3-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="section-2-comparison-of-unallocated-cases" class="section level2">
+<h2>Section 2: Comparison of unallocated cases</h2>
+<p>Date updated: 7/13/2020 (data downloaded: 7/14/2020)</p>
+<div id="unallocated-cases-and-deaths-by-state" class="section level3">
+<h3>Unallocated cases and deaths by state</h3>
+<p>This plot shows only states where there are unallocated cases or deaths in either data source.</p>
+<p><img src="compare_usafacts_nyt_071320_files/figure-html/unnamed-chunk-5-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="deaths-categorized-as-new-york-city-unallocated-in-usafacts" class="section level3">
+<h3>Deaths categorized as New York City unallocated in USAFacts</h3>
+<p>There are currently only a handful of such deaths, and no such cases</p>
+<table style="width:67%;">
+<colgroup>
+<col width="31%" />
+<col width="11%" />
+<col width="11%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">County</th>
+<th align="center">State</th>
+<th align="center">Cases</th>
+<th align="center">Deaths</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">New York City Unallocated/Probable</td>
+<td align="center">NY</td>
+<td align="center">0</td>
+<td align="center">37</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="section-3-comparison-of-counties-with-reported-cases-in-the-two-data-sets" class="section level2">
+<h2>Section 3: Comparison of counties with reported cases in the two data sets</h2>
+<p>Date updated: 7/13/2020 (data downloaded: 7/14/2020)</p>
+<div id="counties-fips-codes-in-nyt-but-not-in-usafacts" class="section level3">
+<h3>Counties (FIPs codes) in NYT but not in USAFacts</h3>
+<p>All county FIPS codes from the New York Times data are in the USAFacts data with the exception of FIPS codes corresponding to counties in Puerto Rico.</p>
+<table style="width:64%;">
+<colgroup>
+<col width="19%" />
+<col width="44%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">State</th>
+<th align="center"># Counties in NYT but missing from USAFacts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Puerto Rico</td>
+<td align="center">78</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="counties-fips-codes-in-usafacts-but-not-in-nyt" class="section level3">
+<h3>Counties (FIPs codes) in USAFacts but not in NYT</h3>
+<p>There are a few FIPs codes that appear in the USAFacts data but not in the NYT:</p>
+<ul>
+<li><p>The Grand Princess cruise ship is included in USAFacts but not in NYT</p></li>
+<li><p>USAFacts has a row for Russell county, KS whereas NYT has a single row for Kansas City</p></li>
+<li><p>USAFacts has rows for each of five counties in New York City, whereas NYT has a single row for New York City</p></li>
+<li><p>USA facts has a row for Martinsville City, while NYT does not</p></li>
+</ul>
+<table style="width:100%;">
+<colgroup>
+<col width="8%" />
+<col width="29%" />
+<col width="8%" />
+<col width="20%" />
+<col width="16%" />
+<col width="16%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">State</th>
+<th align="center">County</th>
+<th align="center">FIPS</th>
+<th align="center">Cummulative cases</th>
+<th align="center">Earliest date</th>
+<th align="center">Latest date</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">CA</td>
+<td align="center">Grand Princess Cruise Ship</td>
+<td align="center">06000</td>
+<td align="center">21</td>
+<td align="center">2020-03-07</td>
+<td align="center">2020-07-13</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Bronx County</td>
+<td align="center">36005</td>
+<td align="center">48377</td>
+<td align="center">2020-03-08</td>
+<td align="center">2020-07-13</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Kings County</td>
+<td align="center">36047</td>
+<td align="center">60815</td>
+<td align="center">2020-03-05</td>
+<td align="center">2020-07-13</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">New York County</td>
+<td align="center">36061</td>
+<td align="center">29302</td>
+<td align="center">2020-03-02</td>
+<td align="center">2020-07-13</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Queens County</td>
+<td align="center">36081</td>
+<td align="center">66466</td>
+<td align="center">2020-03-07</td>
+<td align="center">2020-07-13</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Richmond County</td>
+<td align="center">36085</td>
+<td align="center">14341</td>
+<td align="center">2020-03-09</td>
+<td align="center">2020-07-13</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Martinsville city</td>
+<td align="center">51690</td>
+<td align="center">117</td>
+<td align="center">2020-04-28</td>
+<td align="center">2020-07-13</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="section-4-comparison-of-cumulative-cases-for-all-counties-that-appear-in-both-data-sets" class="section level2">
+<h2>Section 4: Comparison of cumulative cases for all counties that appear in both data sets</h2>
+<p>Date updated: 7/13/2020 (data downloaded: 7/14/2020)</p>
+<p><img src="compare_usafacts_nyt_071320_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="counties-where-the-case-count-in-usafacts-differs-from-the-case-count-in-nyt-by-more-than-5" class="section level3 tabset">
+<h3>Counties where the case count in USAFacts differs from the case count in NYT by more than 5%</h3>
+<p>Percentage difference is defined relative to USAFacts ([NYT-USAFacts]/USAFacts).</p>
+<div id="plot" class="section level4">
+<h4>Plot</h4>
+<p><img src="compare_usafacts_nyt_071320_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="table" class="section level4">
+<h4>Table</h4>
+<p>The following table is arranged in descending order of the absolute value of the difference between the two sources.</p>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="37%" />
+<col width="8%" />
+<col width="8%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">State</th>
+<th align="center">County USAFacts</th>
+<th align="center">FIPS</th>
+<th align="center">NYT</th>
+<th align="center">USAFacts</th>
+<th align="center">Percent difference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">PA</td>
+<td align="center">Philadelphia County</td>
+<td align="center">42101</td>
+<td align="center">27575</td>
+<td align="center">22987</td>
+<td align="center">20%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">Jackson County (including other portions of Kansas City)</td>
+<td align="center">29095</td>
+<td align="center">1781</td>
+<td align="center">4767</td>
+<td align="center">-63%</td>
+</tr>
+<tr class="odd">
+<td align="center">MI</td>
+<td align="center">Jackson County</td>
+<td align="center">26075</td>
+<td align="center">2163</td>
+<td align="center">555</td>
+<td align="center">290%</td>
+</tr>
+<tr class="even">
+<td align="center">NM</td>
+<td align="center">Otero County</td>
+<td align="center">35035</td>
+<td align="center">950</td>
+<td align="center">79</td>
+<td align="center">1102%</td>
+</tr>
+<tr class="odd">
+<td align="center">MI</td>
+<td align="center">Branch County</td>
+<td align="center">26023</td>
+<td align="center">1062</td>
+<td align="center">269</td>
+<td align="center">295%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Lenawee County</td>
+<td align="center">26091</td>
+<td align="center">1013</td>
+<td align="center">283</td>
+<td align="center">258%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Ector County</td>
+<td align="center">48135</td>
+<td align="center">1964</td>
+<td align="center">1235</td>
+<td align="center">59%</td>
+</tr>
+<tr class="even">
+<td align="center">TN</td>
+<td align="center">Davidson County</td>
+<td align="center">47037</td>
+<td align="center">14702</td>
+<td align="center">13976</td>
+<td align="center">5%</td>
+</tr>
+<tr class="odd">
+<td align="center">WA</td>
+<td align="center">Snohomish County</td>
+<td align="center">53061</td>
+<td align="center">4613</td>
+<td align="center">4033</td>
+<td align="center">14%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Washtenaw County</td>
+<td align="center">26161</td>
+<td align="center">2433</td>
+<td align="center">1938</td>
+<td align="center">26%</td>
+</tr>
+<tr class="odd">
+<td align="center">CA</td>
+<td align="center">Ventura County</td>
+<td align="center">06111</td>
+<td align="center">4724</td>
+<td align="center">4246</td>
+<td align="center">11%</td>
+</tr>
+<tr class="even">
+<td align="center">CA</td>
+<td align="center">Lassen County</td>
+<td align="center">06035</td>
+<td align="center">428</td>
+<td align="center">35</td>
+<td align="center">1123%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">St. Charles County</td>
+<td align="center">29183</td>
+<td align="center">1760</td>
+<td align="center">1371</td>
+<td align="center">28%</td>
+</tr>
+<tr class="even">
+<td align="center">WA</td>
+<td align="center">Pierce County</td>
+<td align="center">53053</td>
+<td align="center">3634</td>
+<td align="center">3257</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Galveston County</td>
+<td align="center">48167</td>
+<td align="center">6201</td>
+<td align="center">5873</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">ID</td>
+<td align="center">Ada County</td>
+<td align="center">16001</td>
+<td align="center">4472</td>
+<td align="center">4146</td>
+<td align="center">8%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Cameron County</td>
+<td align="center">48061</td>
+<td align="center">4175</td>
+<td align="center">3854</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Lapeer County</td>
+<td align="center">26087</td>
+<td align="center">632</td>
+<td align="center">325</td>
+<td align="center">94%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Comal County</td>
+<td align="center">48091</td>
+<td align="center">1282</td>
+<td align="center">977</td>
+<td align="center">31%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Shelby County</td>
+<td align="center">18145</td>
+<td align="center">701</td>
+<td align="center">460</td>
+<td align="center">52%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Jasper County</td>
+<td align="center">29097</td>
+<td align="center">778</td>
+<td align="center">1019</td>
+<td align="center">-24%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Williamson County</td>
+<td align="center">48491</td>
+<td align="center">4042</td>
+<td align="center">3810</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">CA</td>
+<td align="center">Santa Barbara County</td>
+<td align="center">06083</td>
+<td align="center">4353</td>
+<td align="center">4140</td>
+<td align="center">5%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Val Verde County</td>
+<td align="center">48465</td>
+<td align="center">699</td>
+<td align="center">503</td>
+<td align="center">39%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Victoria County</td>
+<td align="center">48469</td>
+<td align="center">1795</td>
+<td align="center">1599</td>
+<td align="center">12%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Wayne County</td>
+<td align="center">18177</td>
+<td align="center">354</td>
+<td align="center">159</td>
+<td align="center">123%</td>
+</tr>
+<tr class="odd">
+<td align="center">WA</td>
+<td align="center">Clark County</td>
+<td align="center">53011</td>
+<td align="center">1272</td>
+<td align="center">1078</td>
+<td align="center">18%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">McLennan County</td>
+<td align="center">48309</td>
+<td align="center">2744</td>
+<td align="center">2557</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Jefferson County</td>
+<td align="center">29099</td>
+<td align="center">769</td>
+<td align="center">594</td>
+<td align="center">30%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">McDonald County</td>
+<td align="center">29119</td>
+<td align="center">887</td>
+<td align="center">712</td>
+<td align="center">25%</td>
+</tr>
+<tr class="odd">
+<td align="center">WA</td>
+<td align="center">Benton County</td>
+<td align="center">53005</td>
+<td align="center">2557</td>
+<td align="center">2387</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">Boone County</td>
+<td align="center">29019</td>
+<td align="center">764</td>
+<td align="center">595</td>
+<td align="center">28%</td>
+</tr>
+<tr class="odd">
+<td align="center">KY</td>
+<td align="center">Fayette County</td>
+<td align="center">21067</td>
+<td align="center">2076</td>
+<td align="center">1912</td>
+<td align="center">9%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Smith County</td>
+<td align="center">48423</td>
+<td align="center">1442</td>
+<td align="center">1299</td>
+<td align="center">11%</td>
+</tr>
+<tr class="odd">
+<td align="center">WA</td>
+<td align="center">Franklin County</td>
+<td align="center">53021</td>
+<td align="center">2600</td>
+<td align="center">2465</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">CA</td>
+<td align="center">Madera County</td>
+<td align="center">06039</td>
+<td align="center">1025</td>
+<td align="center">893</td>
+<td align="center">15%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Titus County</td>
+<td align="center">48449</td>
+<td align="center">1016</td>
+<td align="center">887</td>
+<td align="center">14%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Grant County</td>
+<td align="center">18053</td>
+<td align="center">449</td>
+<td align="center">322</td>
+<td align="center">39%</td>
+</tr>
+<tr class="odd">
+<td align="center">IL</td>
+<td align="center">St. Clair County</td>
+<td align="center">17163</td>
+<td align="center">2471</td>
+<td align="center">2347</td>
+<td align="center">5%</td>
+</tr>
+<tr class="even">
+<td align="center">WI</td>
+<td align="center">Rock County</td>
+<td align="center">55105</td>
+<td align="center">1156</td>
+<td align="center">1041</td>
+<td align="center">11%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Greene County</td>
+<td align="center">29077</td>
+<td align="center">577</td>
+<td align="center">469</td>
+<td align="center">23%</td>
+</tr>
+<tr class="even">
+<td align="center">GA</td>
+<td align="center">Richmond County</td>
+<td align="center">13245</td>
+<td align="center">1759</td>
+<td align="center">1656</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">NC</td>
+<td align="center">Dare County</td>
+<td align="center">37055</td>
+<td align="center">215</td>
+<td align="center">114</td>
+<td align="center">89%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Gregg County</td>
+<td align="center">48183</td>
+<td align="center">863</td>
+<td align="center">762</td>
+<td align="center">13%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Navarro County</td>
+<td align="center">48349</td>
+<td align="center">541</td>
+<td align="center">446</td>
+<td align="center">21%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Taylor County</td>
+<td align="center">48441</td>
+<td align="center">844</td>
+<td align="center">750</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Midland County</td>
+<td align="center">48329</td>
+<td align="center">1194</td>
+<td align="center">1104</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Municipality of Anchorage</td>
+<td align="center">02020</td>
+<td align="center">812</td>
+<td align="center">740</td>
+<td align="center">10%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Brown County</td>
+<td align="center">48049</td>
+<td align="center">237</td>
+<td align="center">171</td>
+<td align="center">39%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Berrien County</td>
+<td align="center">26021</td>
+<td align="center">1084</td>
+<td align="center">1019</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Cass County</td>
+<td align="center">29037</td>
+<td align="center">267</td>
+<td align="center">207</td>
+<td align="center">29%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">Johnson County</td>
+<td align="center">29101</td>
+<td align="center">309</td>
+<td align="center">249</td>
+<td align="center">24%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Randall County</td>
+<td align="center">48381</td>
+<td align="center">1105</td>
+<td align="center">1045</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Casey County</td>
+<td align="center">21045</td>
+<td align="center">98</td>
+<td align="center">41</td>
+<td align="center">139%</td>
+</tr>
+<tr class="odd">
+<td align="center">NJ</td>
+<td align="center">Hunterdon County</td>
+<td align="center">34019</td>
+<td align="center">1150</td>
+<td align="center">1094</td>
+<td align="center">5%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Fayette County</td>
+<td align="center">18041</td>
+<td align="center">161</td>
+<td align="center">108</td>
+<td align="center">49%</td>
+</tr>
+<tr class="odd">
+<td align="center">MI</td>
+<td align="center">Livingston County</td>
+<td align="center">26093</td>
+<td align="center">666</td>
+<td align="center">618</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">MT</td>
+<td align="center">Gallatin County</td>
+<td align="center">30031</td>
+<td align="center">455</td>
+<td align="center">408</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Portsmouth City</td>
+<td align="center">51740</td>
+<td align="center">714</td>
+<td align="center">761</td>
+<td align="center">-6%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Christian County</td>
+<td align="center">21047</td>
+<td align="center">343</td>
+<td align="center">297</td>
+<td align="center">16%</td>
+</tr>
+<tr class="odd">
+<td align="center">KY</td>
+<td align="center">Ohio County</td>
+<td align="center">21183</td>
+<td align="center">265</td>
+<td align="center">221</td>
+<td align="center">20%</td>
+</tr>
+<tr class="even">
+<td align="center">NM</td>
+<td align="center">Torrance County</td>
+<td align="center">35057</td>
+<td align="center">92</td>
+<td align="center">49</td>
+<td align="center">88%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Cole County</td>
+<td align="center">29051</td>
+<td align="center">151</td>
+<td align="center">111</td>
+<td align="center">36%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Suffolk City</td>
+<td align="center">51800</td>
+<td align="center">573</td>
+<td align="center">612</td>
+<td align="center">-6%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Bannock County</td>
+<td align="center">16005</td>
+<td align="center">179</td>
+<td align="center">141</td>
+<td align="center">27%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Zavala County</td>
+<td align="center">48507</td>
+<td align="center">96</td>
+<td align="center">60</td>
+<td align="center">60%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Warren County</td>
+<td align="center">29219</td>
+<td align="center">92</td>
+<td align="center">57</td>
+<td align="center">61%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Rockwall County</td>
+<td align="center">48397</td>
+<td align="center">467</td>
+<td align="center">433</td>
+<td align="center">8%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Wichita County</td>
+<td align="center">48485</td>
+<td align="center">636</td>
+<td align="center">604</td>
+<td align="center">5%</td>
+</tr>
+<tr class="even">
+<td align="center">WI</td>
+<td align="center">Ozaukee County</td>
+<td align="center">55089</td>
+<td align="center">343</td>
+<td align="center">315</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Bingham County</td>
+<td align="center">16011</td>
+<td align="center">105</td>
+<td align="center">78</td>
+<td align="center">35%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Randolph County</td>
+<td align="center">18135</td>
+<td align="center">107</td>
+<td align="center">80</td>
+<td align="center">34%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Rush County</td>
+<td align="center">18139</td>
+<td align="center">87</td>
+<td align="center">62</td>
+<td align="center">40%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">Christian County</td>
+<td align="center">29043</td>
+<td align="center">102</td>
+<td align="center">77</td>
+<td align="center">32%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Charlottesville City</td>
+<td align="center">51540</td>
+<td align="center">285</td>
+<td align="center">310</td>
+<td align="center">-8%</td>
+</tr>
+<tr class="even">
+<td align="center">ID</td>
+<td align="center">Bonneville County</td>
+<td align="center">16019</td>
+<td align="center">221</td>
+<td align="center">197</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">NV</td>
+<td align="center">Elko County</td>
+<td align="center">32007</td>
+<td align="center">267</td>
+<td align="center">244</td>
+<td align="center">9%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Kenai Peninsula Borough</td>
+<td align="center">02122</td>
+<td align="center">225</td>
+<td align="center">203</td>
+<td align="center">11%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Fairbanks North Star Borough</td>
+<td align="center">02090</td>
+<td align="center">277</td>
+<td align="center">255</td>
+<td align="center">9%</td>
+</tr>
+<tr class="even">
+<td align="center">KS</td>
+<td align="center">Saline County</td>
+<td align="center">20169</td>
+<td align="center">241</td>
+<td align="center">220</td>
+<td align="center">10%</td>
+</tr>
+<tr class="odd">
+<td align="center">WA</td>
+<td align="center">Thurston County</td>
+<td align="center">53067</td>
+<td align="center">397</td>
+<td align="center">376</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">St. Francois County</td>
+<td align="center">29187</td>
+<td align="center">187</td>
+<td align="center">167</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Southeast Fairbanks Census Area</td>
+<td align="center">02240</td>
+<td align="center">22</td>
+<td align="center">3</td>
+<td align="center">633%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Pulaski County</td>
+<td align="center">21199</td>
+<td align="center">146</td>
+<td align="center">127</td>
+<td align="center">15%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Union County</td>
+<td align="center">18161</td>
+<td align="center">32</td>
+<td align="center">14</td>
+<td align="center">129%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Adair County</td>
+<td align="center">21001</td>
+<td align="center">160</td>
+<td align="center">142</td>
+<td align="center">13%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Wells County</td>
+<td align="center">18179</td>
+<td align="center">100</td>
+<td align="center">83</td>
+<td align="center">20%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Decatur County</td>
+<td align="center">18031</td>
+<td align="center">274</td>
+<td align="center">257</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Pettis County</td>
+<td align="center">29159</td>
+<td align="center">172</td>
+<td align="center">156</td>
+<td align="center">10%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Taylor County</td>
+<td align="center">21217</td>
+<td align="center">67</td>
+<td align="center">52</td>
+<td align="center">29%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Nome Census Area</td>
+<td align="center">02180</td>
+<td align="center">18</td>
+<td align="center">5</td>
+<td align="center">260%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Bethel Census Area</td>
+<td align="center">02050</td>
+<td align="center">18</td>
+<td align="center">6</td>
+<td align="center">200%</td>
+</tr>
+<tr class="odd">
+<td align="center">MI</td>
+<td align="center">Manistee County</td>
+<td align="center">26101</td>
+<td align="center">41</td>
+<td align="center">29</td>
+<td align="center">41%</td>
+</tr>
+<tr class="even">
+<td align="center">MT</td>
+<td align="center">Missoula County</td>
+<td align="center">30063</td>
+<td align="center">138</td>
+<td align="center">126</td>
+<td align="center">10%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Yukon-Koyukuk Census Area</td>
+<td align="center">02290</td>
+<td align="center">13</td>
+<td align="center">2</td>
+<td align="center">550%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Ketchikan Gateway Borough</td>
+<td align="center">02130</td>
+<td align="center">32</td>
+<td align="center">21</td>
+<td align="center">52%</td>
+</tr>
+<tr class="odd">
+<td align="center">KS</td>
+<td align="center">Bourbon County</td>
+<td align="center">20011</td>
+<td align="center">54</td>
+<td align="center">43</td>
+<td align="center">26%</td>
+</tr>
+<tr class="even">
+<td align="center">KS</td>
+<td align="center">Grant County</td>
+<td align="center">20067</td>
+<td align="center">66</td>
+<td align="center">55</td>
+<td align="center">20%</td>
+</tr>
+<tr class="odd">
+<td align="center">KY</td>
+<td align="center">Russell County</td>
+<td align="center">21207</td>
+<td align="center">73</td>
+<td align="center">62</td>
+<td align="center">18%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Otsego County</td>
+<td align="center">26137</td>
+<td align="center">136</td>
+<td align="center">125</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Perry County</td>
+<td align="center">18123</td>
+<td align="center">162</td>
+<td align="center">151</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Wayne County</td>
+<td align="center">21231</td>
+<td align="center">30</td>
+<td align="center">20</td>
+<td align="center">50%</td>
+</tr>
+<tr class="odd">
+<td align="center">CA</td>
+<td align="center">Mendocino County</td>
+<td align="center">06045</td>
+<td align="center">146</td>
+<td align="center">136</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">CA</td>
+<td align="center">Glenn County</td>
+<td align="center">06021</td>
+<td align="center">166</td>
+<td align="center">176</td>
+<td align="center">-6%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Kodiak Island Borough</td>
+<td align="center">02150</td>
+<td align="center">12</td>
+<td align="center">3</td>
+<td align="center">300%</td>
+</tr>
+<tr class="even">
+<td align="center">CA</td>
+<td align="center">Humboldt County</td>
+<td align="center">06023</td>
+<td align="center">174</td>
+<td align="center">165</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Essex County</td>
+<td align="center">36031</td>
+<td align="center">59</td>
+<td align="center">51</td>
+<td align="center">16%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Grand Traverse County</td>
+<td align="center">26055</td>
+<td align="center">98</td>
+<td align="center">90</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Adair County</td>
+<td align="center">29001</td>
+<td align="center">108</td>
+<td align="center">100</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Franklin County</td>
+<td align="center">51067</td>
+<td align="center">106</td>
+<td align="center">114</td>
+<td align="center">-7%</td>
+</tr>
+<tr class="odd">
+<td align="center">MT</td>
+<td align="center">Big Horn County</td>
+<td align="center">30003</td>
+<td align="center">119</td>
+<td align="center">127</td>
+<td align="center">-6%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Franklin County</td>
+<td align="center">18047</td>
+<td align="center">136</td>
+<td align="center">128</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Platte County</td>
+<td align="center">29165</td>
+<td align="center">164</td>
+<td align="center">156</td>
+<td align="center">5%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Sitka City and Borough</td>
+<td align="center">02220</td>
+<td align="center">18</td>
+<td align="center">11</td>
+<td align="center">64%</td>
+</tr>
+<tr class="odd">
+<td align="center">WA</td>
+<td align="center">Whitman County</td>
+<td align="center">53075</td>
+<td align="center">52</td>
+<td align="center">45</td>
+<td align="center">16%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Wise County</td>
+<td align="center">51195</td>
+<td align="center">40</td>
+<td align="center">47</td>
+<td align="center">-15%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Madison County</td>
+<td align="center">16065</td>
+<td align="center">76</td>
+<td align="center">69</td>
+<td align="center">10%</td>
+</tr>
+<tr class="even">
+<td align="center">ID</td>
+<td align="center">Bonner County</td>
+<td align="center">16017</td>
+<td align="center">78</td>
+<td align="center">71</td>
+<td align="center">10%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Gloucester County</td>
+<td align="center">51073</td>
+<td align="center">69</td>
+<td align="center">76</td>
+<td align="center">-9%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Edmonson County</td>
+<td align="center">21061</td>
+<td align="center">84</td>
+<td align="center">77</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">KS</td>
+<td align="center">Graham County</td>
+<td align="center">20065</td>
+<td align="center">13</td>
+<td align="center">7</td>
+<td align="center">86%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Cumberland County</td>
+<td align="center">21057</td>
+<td align="center">13</td>
+<td align="center">7</td>
+<td align="center">86%</td>
+</tr>
+<tr class="odd">
+<td align="center">KS</td>
+<td align="center">Republic County</td>
+<td align="center">20157</td>
+<td align="center">21</td>
+<td align="center">15</td>
+<td align="center">40%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Meade County</td>
+<td align="center">21163</td>
+<td align="center">39</td>
+<td align="center">33</td>
+<td align="center">18%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">City and Borough of Juneau</td>
+<td align="center">02110</td>
+<td align="center">57</td>
+<td align="center">51</td>
+<td align="center">12%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">Moniteau County</td>
+<td align="center">29135</td>
+<td align="center">72</td>
+<td align="center">66</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Elmore County</td>
+<td align="center">16039</td>
+<td align="center">103</td>
+<td align="center">97</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Gratiot County</td>
+<td align="center">26057</td>
+<td align="center">113</td>
+<td align="center">107</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Wrangell City and Borough</td>
+<td align="center">02275</td>
+<td align="center">8</td>
+<td align="center">3</td>
+<td align="center">167%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Parke County</td>
+<td align="center">18121</td>
+<td align="center">33</td>
+<td align="center">28</td>
+<td align="center">18%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Jefferson County</td>
+<td align="center">16051</td>
+<td align="center">36</td>
+<td align="center">31</td>
+<td align="center">16%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Jay County</td>
+<td align="center">18075</td>
+<td align="center">77</td>
+<td align="center">72</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Powhatan County</td>
+<td align="center">51145</td>
+<td align="center">92</td>
+<td align="center">97</td>
+<td align="center">-5%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Haines Borough</td>
+<td align="center">02100</td>
+<td align="center">6</td>
+<td align="center">2</td>
+<td align="center">200%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Petersburg Census Area</td>
+<td align="center">02195</td>
+<td align="center">8</td>
+<td align="center">4</td>
+<td align="center">100%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Green County</td>
+<td align="center">21087</td>
+<td align="center">14</td>
+<td align="center">10</td>
+<td align="center">40%</td>
+</tr>
+<tr class="odd">
+<td align="center">KY</td>
+<td align="center">Larue County</td>
+<td align="center">21123</td>
+<td align="center">23</td>
+<td align="center">19</td>
+<td align="center">21%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Lancaster County</td>
+<td align="center">51103</td>
+<td align="center">16</td>
+<td align="center">20</td>
+<td align="center">-20%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Teton County</td>
+<td align="center">16081</td>
+<td align="center">37</td>
+<td align="center">33</td>
+<td align="center">12%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Blackford County</td>
+<td align="center">18009</td>
+<td align="center">44</td>
+<td align="center">40</td>
+<td align="center">10%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Buchanan County</td>
+<td align="center">51027</td>
+<td align="center">42</td>
+<td align="center">46</td>
+<td align="center">-9%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Patrick County</td>
+<td align="center">51141</td>
+<td align="center">48</td>
+<td align="center">52</td>
+<td align="center">-8%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Campbell County</td>
+<td align="center">51031</td>
+<td align="center">66</td>
+<td align="center">70</td>
+<td align="center">-6%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Northwest Arctic Borough</td>
+<td align="center">02188</td>
+<td align="center">7</td>
+<td align="center">4</td>
+<td align="center">75%</td>
+</tr>
+<tr class="odd">
+<td align="center">CA</td>
+<td align="center">Plumas County</td>
+<td align="center">06063</td>
+<td align="center">14</td>
+<td align="center">11</td>
+<td align="center">27%</td>
+</tr>
+<tr class="even">
+<td align="center">ID</td>
+<td align="center">Caribou County</td>
+<td align="center">16029</td>
+<td align="center">20</td>
+<td align="center">17</td>
+<td align="center">18%</td>
+</tr>
+<tr class="odd">
+<td align="center">UT</td>
+<td align="center">Grand County</td>
+<td align="center">49019</td>
+<td align="center">23</td>
+<td align="center">26</td>
+<td align="center">-12%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Russell County</td>
+<td align="center">51167</td>
+<td align="center">23</td>
+<td align="center">26</td>
+<td align="center">-12%</td>
+</tr>
+<tr class="odd">
+<td align="center">MI</td>
+<td align="center">Charlevoix County</td>
+<td align="center">26029</td>
+<td align="center">35</td>
+<td align="center">32</td>
+<td align="center">9%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Tazewell County</td>
+<td align="center">51185</td>
+<td align="center">30</td>
+<td align="center">33</td>
+<td align="center">-9%</td>
+</tr>
+<tr class="odd">
+<td align="center">MT</td>
+<td align="center">Ravalli County</td>
+<td align="center">30081</td>
+<td align="center">44</td>
+<td align="center">47</td>
+<td align="center">-6%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Hart County</td>
+<td align="center">21099</td>
+<td align="center">51</td>
+<td align="center">48</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">KS</td>
+<td align="center">Cherokee County</td>
+<td align="center">20021</td>
+<td align="center">57</td>
+<td align="center">54</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Wexford County</td>
+<td align="center">26165</td>
+<td align="center">57</td>
+<td align="center">54</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">GA</td>
+<td align="center">Wheeler County</td>
+<td align="center">13309</td>
+<td align="center">60</td>
+<td align="center">57</td>
+<td align="center">5%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Spencer County</td>
+<td align="center">18147</td>
+<td align="center">62</td>
+<td align="center">59</td>
+<td align="center">5%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Bear Lake County</td>
+<td align="center">16007</td>
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">100%</td>
+</tr>
+<tr class="even">
+<td align="center">KS</td>
+<td align="center">Russell County</td>
+<td align="center">20167</td>
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">100%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">North Slope Borough</td>
+<td align="center">02185</td>
+<td align="center">6</td>
+<td align="center">4</td>
+<td align="center">50%</td>
+</tr>
+<tr class="even">
+<td align="center">KS</td>
+<td align="center">Allen County</td>
+<td align="center">20001</td>
+<td align="center">8</td>
+<td align="center">6</td>
+<td align="center">33%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Idaho County</td>
+<td align="center">16049</td>
+<td align="center">13</td>
+<td align="center">11</td>
+<td align="center">18%</td>
+</tr>
+<tr class="even">
+<td align="center">ID</td>
+<td align="center">Power County</td>
+<td align="center">16077</td>
+<td align="center">22</td>
+<td align="center">20</td>
+<td align="center">10%</td>
+</tr>
+<tr class="odd">
+<td align="center">UT</td>
+<td align="center">Carbon County</td>
+<td align="center">49007</td>
+<td align="center">19</td>
+<td align="center">21</td>
+<td align="center">-10%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Surry County</td>
+<td align="center">51181</td>
+<td align="center">19</td>
+<td align="center">21</td>
+<td align="center">-10%</td>
+</tr>
+<tr class="odd">
+<td align="center">IA</td>
+<td align="center">Appanoose County</td>
+<td align="center">19007</td>
+<td align="center">24</td>
+<td align="center">22</td>
+<td align="center">9%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Lee County</td>
+<td align="center">51105</td>
+<td align="center">20</td>
+<td align="center">22</td>
+<td align="center">-9%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Valley County</td>
+<td align="center">16085</td>
+<td align="center">26</td>
+<td align="center">24</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">UT</td>
+<td align="center">Morgan County</td>
+<td align="center">49029</td>
+<td align="center">32</td>
+<td align="center">30</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">King and Queen County</td>
+<td align="center">51097</td>
+<td align="center">28</td>
+<td align="center">30</td>
+<td align="center">-7%</td>
+</tr>
+<tr class="even">
+<td align="center">GA</td>
+<td align="center">Warren County</td>
+<td align="center">13301</td>
+<td align="center">34</td>
+<td align="center">32</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Franklin County</td>
+<td align="center">16041</td>
+<td align="center">34</td>
+<td align="center">32</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Switzerland County</td>
+<td align="center">18155</td>
+<td align="center">34</td>
+<td align="center">32</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">CA</td>
+<td align="center">Inyo County</td>
+<td align="center">06027</td>
+<td align="center">35</td>
+<td align="center">37</td>
+<td align="center">-5%</td>
+</tr>
+<tr class="even">
+<td align="center">KS</td>
+<td align="center">Logan County</td>
+<td align="center">20109</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">100%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Prince of Wales-Hyder Census Area</td>
+<td align="center">02198</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">50%</td>
+</tr>
+<tr class="even">
+<td align="center">CA</td>
+<td align="center">Alpine County</td>
+<td align="center">06003</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">-50%</td>
+</tr>
+<tr class="odd">
+<td align="center">CA</td>
+<td align="center">Trinity County</td>
+<td align="center">06105</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">50%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Luce County</td>
+<td align="center">26095</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">33%</td>
+</tr>
+<tr class="odd">
+<td align="center">MT</td>
+<td align="center">Fergus County</td>
+<td align="center">30027</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">-33%</td>
+</tr>
+<tr class="even">
+<td align="center">ME</td>
+<td align="center">Washington County</td>
+<td align="center">23029</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">25%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Clearwater County</td>
+<td align="center">16035</td>
+<td align="center">6</td>
+<td align="center">5</td>
+<td align="center">20%</td>
+</tr>
+<tr class="even">
+<td align="center">KS</td>
+<td align="center">Chase County</td>
+<td align="center">20017</td>
+<td align="center">6</td>
+<td align="center">5</td>
+<td align="center">20%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Oneida County</td>
+<td align="center">16071</td>
+<td align="center">8</td>
+<td align="center">7</td>
+<td align="center">14%</td>
+</tr>
+<tr class="even">
+<td align="center">MT</td>
+<td align="center">Deer Lodge County</td>
+<td align="center">30023</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">-14%</td>
+</tr>
+<tr class="odd">
+<td align="center">WV</td>
+<td align="center">Tucker County</td>
+<td align="center">54093</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">-14%</td>
+</tr>
+<tr class="even">
+<td align="center">ID</td>
+<td align="center">Shoshone County</td>
+<td align="center">16079</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">ID</td>
+<td align="center">Boise County</td>
+<td align="center">16015</td>
+<td align="center">10</td>
+<td align="center">9</td>
+<td align="center">11%</td>
+</tr>
+<tr class="even">
+<td align="center">KS</td>
+<td align="center">Rice County</td>
+<td align="center">20159</td>
+<td align="center">10</td>
+<td align="center">9</td>
+<td align="center">11%</td>
+</tr>
+<tr class="odd">
+<td align="center">KS</td>
+<td align="center">Woodson County</td>
+<td align="center">20207</td>
+<td align="center">10</td>
+<td align="center">9</td>
+<td align="center">11%</td>
+</tr>
+<tr class="even">
+<td align="center">MT</td>
+<td align="center">Dawson County</td>
+<td align="center">30021</td>
+<td align="center">8</td>
+<td align="center">9</td>
+<td align="center">-11%</td>
+</tr>
+<tr class="odd">
+<td align="center">UT</td>
+<td align="center">Emery County</td>
+<td align="center">49015</td>
+<td align="center">9</td>
+<td align="center">10</td>
+<td align="center">-10%</td>
+</tr>
+<tr class="even">
+<td align="center">MT</td>
+<td align="center">Jefferson County</td>
+<td align="center">30043</td>
+<td align="center">10</td>
+<td align="center">11</td>
+<td align="center">-9%</td>
+</tr>
+<tr class="odd">
+<td align="center">WY</td>
+<td align="center">Hot Springs County</td>
+<td align="center">56017</td>
+<td align="center">13</td>
+<td align="center">12</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Bristol city</td>
+<td align="center">51520</td>
+<td align="center">13</td>
+<td align="center">14</td>
+<td align="center">-7%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Warren County</td>
+<td align="center">18171</td>
+<td align="center">16</td>
+<td align="center">15</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">McCreary County</td>
+<td align="center">21147</td>
+<td align="center">19</td>
+<td align="center">18</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">MT</td>
+<td align="center">Park County</td>
+<td align="center">30067</td>
+<td align="center">17</td>
+<td align="center">18</td>
+<td align="center">-6%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Radford city</td>
+<td align="center">51750</td>
+<td align="center">17</td>
+<td align="center">18</td>
+<td align="center">-6%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="section-5-comparison-of-cumulative-deaths-for-all-counties-that-appear-in-both-data-sets" class="section level2">
+<h2>Section 5: Comparison of cumulative deaths for all counties that appear in both data sets</h2>
+<p>Date updated: 7/13/2020 (data downloaded: 7/14/2020)</p>
+<p><img src="compare_usafacts_nyt_071320_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="counties-where-the-death-count-in-usafacts-differs-from-the-death-count-in-nyt-by-more-than-5" class="section level3 tabset">
+<h3>Counties where the death count in USAFacts differs from the death count in NYT by more than 5%</h3>
+<p>Percentage difference is defined relative to USAFacts ([NYT-USAFacts]/USAFacts).</p>
+<div id="plot-1" class="section level4">
+<h4>Plot</h4>
+<p><img src="compare_usafacts_nyt_071320_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="table-1" class="section level4">
+<h4>Table</h4>
+<p>The following table is arranged in descending order of the absolute value of the difference between the two sources.</p>
+<table>
+<colgroup>
+<col width="9%" />
+<col width="37%" />
+<col width="9%" />
+<col width="7%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">State</th>
+<th align="center">County USAFacts</th>
+<th align="center">FIPS</th>
+<th align="center">NYT</th>
+<th align="center">USAFacts</th>
+<th align="center">Percent difference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Nassau County</td>
+<td align="center">36059</td>
+<td align="center">2701</td>
+<td align="center">2190</td>
+<td align="center">23%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Westchester County</td>
+<td align="center">36119</td>
+<td align="center">1567</td>
+<td align="center">1435</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Albany County</td>
+<td align="center">36001</td>
+<td align="center">161</td>
+<td align="center">109</td>
+<td align="center">48%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Marion County</td>
+<td align="center">18097</td>
+<td align="center">739</td>
+<td align="center">693</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">PA</td>
+<td align="center">Delaware County</td>
+<td align="center">42045</td>
+<td align="center">709</td>
+<td align="center">668</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Rockland County</td>
+<td align="center">36087</td>
+<td align="center">469</td>
+<td align="center">506</td>
+<td align="center">-7%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Ulster County</td>
+<td align="center">36111</td>
+<td align="center">49</td>
+<td align="center">81</td>
+<td align="center">-40%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Branch County</td>
+<td align="center">26023</td>
+<td align="center">25</td>
+<td align="center">2</td>
+<td align="center">1150%</td>
+</tr>
+<tr class="odd">
+<td align="center">MI</td>
+<td align="center">Jackson County</td>
+<td align="center">26075</td>
+<td align="center">54</td>
+<td align="center">32</td>
+<td align="center">69%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Niagara County</td>
+<td align="center">36063</td>
+<td align="center">67</td>
+<td align="center">85</td>
+<td align="center">-21%</td>
+</tr>
+<tr class="odd">
+<td align="center">KY</td>
+<td align="center">Jefferson County</td>
+<td align="center">21111</td>
+<td align="center">224</td>
+<td align="center">206</td>
+<td align="center">9%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">Jackson County (including other portions of Kansas City)</td>
+<td align="center">29095</td>
+<td align="center">44</td>
+<td align="center">61</td>
+<td align="center">-28%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Hendricks County</td>
+<td align="center">18063</td>
+<td align="center">116</td>
+<td align="center">100</td>
+<td align="center">16%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Monroe County</td>
+<td align="center">36055</td>
+<td align="center">264</td>
+<td align="center">248</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Lake County</td>
+<td align="center">18089</td>
+<td align="center">265</td>
+<td align="center">249</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Orleans County</td>
+<td align="center">36073</td>
+<td align="center">41</td>
+<td align="center">55</td>
+<td align="center">-26%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Onondaga County</td>
+<td align="center">36067</td>
+<td align="center">183</td>
+<td align="center">169</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Bowie County</td>
+<td align="center">48037</td>
+<td align="center">28</td>
+<td align="center">16</td>
+<td align="center">75%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Bexar County</td>
+<td align="center">48029</td>
+<td align="center">195</td>
+<td align="center">184</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">Jasper County</td>
+<td align="center">29097</td>
+<td align="center">1</td>
+<td align="center">11</td>
+<td align="center">-91%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Saratoga County</td>
+<td align="center">36091</td>
+<td align="center">5</td>
+<td align="center">15</td>
+<td align="center">-67%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Steuben County</td>
+<td align="center">36101</td>
+<td align="center">19</td>
+<td align="center">29</td>
+<td align="center">-34%</td>
+</tr>
+<tr class="odd">
+<td align="center">NC</td>
+<td align="center">Buncombe County</td>
+<td align="center">37021</td>
+<td align="center">41</td>
+<td align="center">31</td>
+<td align="center">32%</td>
+</tr>
+<tr class="even">
+<td align="center">CA</td>
+<td align="center">Marin County</td>
+<td align="center">06041</td>
+<td align="center">28</td>
+<td align="center">38</td>
+<td align="center">-26%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Madison County</td>
+<td align="center">18095</td>
+<td align="center">74</td>
+<td align="center">64</td>
+<td align="center">16%</td>
+</tr>
+<tr class="even">
+<td align="center">MI</td>
+<td align="center">Washtenaw County</td>
+<td align="center">26161</td>
+<td align="center">118</td>
+<td align="center">108</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Allen County</td>
+<td align="center">18003</td>
+<td align="center">144</td>
+<td align="center">134</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">WA</td>
+<td align="center">Yakima County</td>
+<td align="center">53077</td>
+<td align="center">190</td>
+<td align="center">180</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Greene County</td>
+<td align="center">36039</td>
+<td align="center">5</td>
+<td align="center">13</td>
+<td align="center">-62%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Fulton County</td>
+<td align="center">36035</td>
+<td align="center">18</td>
+<td align="center">26</td>
+<td align="center">-31%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Johnson County</td>
+<td align="center">18081</td>
+<td align="center">126</td>
+<td align="center">118</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Dutchess County</td>
+<td align="center">36027</td>
+<td align="center">160</td>
+<td align="center">152</td>
+<td align="center">5%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Clay County</td>
+<td align="center">29047</td>
+<td align="center">20</td>
+<td align="center">13</td>
+<td align="center">54%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Shelby County</td>
+<td align="center">18145</td>
+<td align="center">32</td>
+<td align="center">25</td>
+<td align="center">28%</td>
+</tr>
+<tr class="odd">
+<td align="center">MI</td>
+<td align="center">Lapeer County</td>
+<td align="center">26087</td>
+<td align="center">39</td>
+<td align="center">32</td>
+<td align="center">22%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Clark County</td>
+<td align="center">18019</td>
+<td align="center">51</td>
+<td align="center">44</td>
+<td align="center">16%</td>
+</tr>
+<tr class="odd">
+<td align="center">NE</td>
+<td align="center">Douglas County</td>
+<td align="center">31055</td>
+<td align="center">106</td>
+<td align="center">100</td>
+<td align="center">6%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Hamilton County</td>
+<td align="center">18057</td>
+<td align="center">107</td>
+<td align="center">101</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Ector County</td>
+<td align="center">48135</td>
+<td align="center">19</td>
+<td align="center">14</td>
+<td align="center">36%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Rensselaer County</td>
+<td align="center">36083</td>
+<td align="center">38</td>
+<td align="center">33</td>
+<td align="center">15%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Sullivan County</td>
+<td align="center">36105</td>
+<td align="center">31</td>
+<td align="center">36</td>
+<td align="center">-14%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">St. Joseph County</td>
+<td align="center">18141</td>
+<td align="center">74</td>
+<td align="center">69</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">MI</td>
+<td align="center">Lenawee County</td>
+<td align="center">26091</td>
+<td align="center">15</td>
+<td align="center">11</td>
+<td align="center">36%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Logan County</td>
+<td align="center">21141</td>
+<td align="center">17</td>
+<td align="center">13</td>
+<td align="center">31%</td>
+</tr>
+<tr class="odd">
+<td align="center">NC</td>
+<td align="center">Union County</td>
+<td align="center">37179</td>
+<td align="center">30</td>
+<td align="center">26</td>
+<td align="center">15%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Columbia County</td>
+<td align="center">36021</td>
+<td align="center">43</td>
+<td align="center">47</td>
+<td align="center">-8%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Nueces County</td>
+<td align="center">48355</td>
+<td align="center">58</td>
+<td align="center">54</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Elkhart County</td>
+<td align="center">18039</td>
+<td align="center">64</td>
+<td align="center">60</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">WA</td>
+<td align="center">Thurston County</td>
+<td align="center">53067</td>
+<td align="center">8</td>
+<td align="center">5</td>
+<td align="center">60%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Chenango County</td>
+<td align="center">36017</td>
+<td align="center">3</td>
+<td align="center">6</td>
+<td align="center">-50%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Madison County</td>
+<td align="center">36053</td>
+<td align="center">6</td>
+<td align="center">9</td>
+<td align="center">-33%</td>
+</tr>
+<tr class="even">
+<td align="center">TN</td>
+<td align="center">Knox County</td>
+<td align="center">47093</td>
+<td align="center">13</td>
+<td align="center">10</td>
+<td align="center">30%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Gregg County</td>
+<td align="center">48183</td>
+<td align="center">16</td>
+<td align="center">13</td>
+<td align="center">23%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Washington County</td>
+<td align="center">36115</td>
+<td align="center">11</td>
+<td align="center">14</td>
+<td align="center">-21%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Rockingham County</td>
+<td align="center">51165</td>
+<td align="center">12</td>
+<td align="center">15</td>
+<td align="center">-20%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Grant County</td>
+<td align="center">18053</td>
+<td align="center">29</td>
+<td align="center">26</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Morgan County</td>
+<td align="center">18109</td>
+<td align="center">34</td>
+<td align="center">31</td>
+<td align="center">10%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Decatur County</td>
+<td align="center">18031</td>
+<td align="center">35</td>
+<td align="center">32</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Greene County</td>
+<td align="center">18055</td>
+<td align="center">35</td>
+<td align="center">32</td>
+<td align="center">9%</td>
+</tr>
+<tr class="even">
+<td align="center">NC</td>
+<td align="center">Johnston County</td>
+<td align="center">37101</td>
+<td align="center">38</td>
+<td align="center">35</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">NE</td>
+<td align="center">Dakota County</td>
+<td align="center">31043</td>
+<td align="center">39</td>
+<td align="center">36</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">WA</td>
+<td align="center">Whatcom County</td>
+<td align="center">53073</td>
+<td align="center">39</td>
+<td align="center">36</td>
+<td align="center">8%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Webb County</td>
+<td align="center">48479</td>
+<td align="center">46</td>
+<td align="center">43</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Boone County</td>
+<td align="center">18011</td>
+<td align="center">47</td>
+<td align="center">44</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Bartholomew County</td>
+<td align="center">18005</td>
+<td align="center">48</td>
+<td align="center">45</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Howard County</td>
+<td align="center">18067</td>
+<td align="center">61</td>
+<td align="center">58</td>
+<td align="center">5%</td>
+</tr>
+<tr class="odd">
+<td align="center">KY</td>
+<td align="center">Casey County</td>
+<td align="center">21045</td>
+<td align="center">3</td>
+<td align="center">1</td>
+<td align="center">200%</td>
+</tr>
+<tr class="even">
+<td align="center">AZ</td>
+<td align="center">Graham County</td>
+<td align="center">04009</td>
+<td align="center">4</td>
+<td align="center">2</td>
+<td align="center">100%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Chemung County</td>
+<td align="center">36015</td>
+<td align="center">5</td>
+<td align="center">3</td>
+<td align="center">67%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Herkimer County</td>
+<td align="center">36043</td>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">-67%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Otsego County</td>
+<td align="center">36077</td>
+<td align="center">6</td>
+<td align="center">4</td>
+<td align="center">50%</td>
+</tr>
+<tr class="even">
+<td align="center">RI</td>
+<td align="center">Newport County</td>
+<td align="center">44005</td>
+<td align="center">6</td>
+<td align="center">4</td>
+<td align="center">50%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Wyoming County</td>
+<td align="center">36121</td>
+<td align="center">3</td>
+<td align="center">5</td>
+<td align="center">-40%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Municipality of Anchorage</td>
+<td align="center">02020</td>
+<td align="center">8</td>
+<td align="center">6</td>
+<td align="center">33%</td>
+</tr>
+<tr class="odd">
+<td align="center">NC</td>
+<td align="center">Brunswick County</td>
+<td align="center">37019</td>
+<td align="center">10</td>
+<td align="center">8</td>
+<td align="center">25%</td>
+</tr>
+<tr class="even">
+<td align="center">NC</td>
+<td align="center">Rutherford County</td>
+<td align="center">37161</td>
+<td align="center">11</td>
+<td align="center">9</td>
+<td align="center">22%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Victoria County</td>
+<td align="center">48469</td>
+<td align="center">12</td>
+<td align="center">10</td>
+<td align="center">20%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Jennings County</td>
+<td align="center">18079</td>
+<td align="center">14</td>
+<td align="center">12</td>
+<td align="center">17%</td>
+</tr>
+<tr class="odd">
+<td align="center">SC</td>
+<td align="center">Lancaster County</td>
+<td align="center">45057</td>
+<td align="center">15</td>
+<td align="center">13</td>
+<td align="center">15%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Daviess County</td>
+<td align="center">18027</td>
+<td align="center">19</td>
+<td align="center">17</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">McLennan County</td>
+<td align="center">48309</td>
+<td align="center">19</td>
+<td align="center">17</td>
+<td align="center">12%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Midland County</td>
+<td align="center">48329</td>
+<td align="center">21</td>
+<td align="center">19</td>
+<td align="center">10%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Harrison County</td>
+<td align="center">18061</td>
+<td align="center">24</td>
+<td align="center">22</td>
+<td align="center">9%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Orange County</td>
+<td align="center">18117</td>
+<td align="center">25</td>
+<td align="center">23</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Monroe County</td>
+<td align="center">18105</td>
+<td align="center">30</td>
+<td align="center">28</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">AZ</td>
+<td align="center">Santa Cruz County</td>
+<td align="center">04023</td>
+<td align="center">31</td>
+<td align="center">29</td>
+<td align="center">7%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Warrick County</td>
+<td align="center">18173</td>
+<td align="center">31</td>
+<td align="center">29</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">KY</td>
+<td align="center">Hopkins County</td>
+<td align="center">21107</td>
+<td align="center">35</td>
+<td align="center">33</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Schenectady County</td>
+<td align="center">36093</td>
+<td align="center">34</td>
+<td align="center">36</td>
+<td align="center">-6%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Porter County</td>
+<td align="center">18127</td>
+<td align="center">40</td>
+<td align="center">38</td>
+<td align="center">5%</td>
+</tr>
+<tr class="odd">
+<td align="center">AK</td>
+<td align="center">Matanuska-Susitna Borough</td>
+<td align="center">02170</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">100%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Adams County</td>
+<td align="center">18001</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">100%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Tipton County</td>
+<td align="center">18159</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">100%</td>
+</tr>
+<tr class="even">
+<td align="center">MO</td>
+<td align="center">Johnson County</td>
+<td align="center">29101</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">100%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Pettis County</td>
+<td align="center">29159</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">100%</td>
+</tr>
+<tr class="even">
+<td align="center">SC</td>
+<td align="center">Calhoun County</td>
+<td align="center">45017</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">100%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Jasper County</td>
+<td align="center">48241</td>
+<td align="center">2</td>
+<td align="center">1</td>
+<td align="center">100%</td>
+</tr>
+<tr class="even">
+<td align="center">AK</td>
+<td align="center">Kenai Peninsula Borough</td>
+<td align="center">02122</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">-50%</td>
+</tr>
+<tr class="odd">
+<td align="center">IL</td>
+<td align="center">Montgomery County</td>
+<td align="center">17135</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">-50%</td>
+</tr>
+<tr class="even">
+<td align="center">KS</td>
+<td align="center">Saline County</td>
+<td align="center">20169</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">50%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Boone County</td>
+<td align="center">29019</td>
+<td align="center">3</td>
+<td align="center">2</td>
+<td align="center">50%</td>
+</tr>
+<tr class="even">
+<td align="center">NY</td>
+<td align="center">Cayuga County</td>
+<td align="center">36011</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">-50%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Wayne County</td>
+<td align="center">36117</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">-50%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Clinton County</td>
+<td align="center">18023</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">33%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Jackson County</td>
+<td align="center">18071</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">33%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Starke County</td>
+<td align="center">18149</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">33%</td>
+</tr>
+<tr class="odd">
+<td align="center">KY</td>
+<td align="center">Henderson County</td>
+<td align="center">21101</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">33%</td>
+</tr>
+<tr class="even">
+<td align="center">NE</td>
+<td align="center">Gage County</td>
+<td align="center">31067</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">33%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Chautauqua County</td>
+<td align="center">36013</td>
+<td align="center">4</td>
+<td align="center">3</td>
+<td align="center">33%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Powhatan County</td>
+<td align="center">51145</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">-33%</td>
+</tr>
+<tr class="odd">
+<td align="center">IL</td>
+<td align="center">Christian County</td>
+<td align="center">17021</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">25%</td>
+</tr>
+<tr class="even">
+<td align="center">IL</td>
+<td align="center">Ogle County</td>
+<td align="center">17141</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">25%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">DeKalb County</td>
+<td align="center">18033</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">25%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Kosciusko County</td>
+<td align="center">18085</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">25%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Montgomery County</td>
+<td align="center">36057</td>
+<td align="center">5</td>
+<td align="center">4</td>
+<td align="center">25%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Richmond County</td>
+<td align="center">51159</td>
+<td align="center">6</td>
+<td align="center">5</td>
+<td align="center">20%</td>
+</tr>
+<tr class="odd">
+<td align="center">NY</td>
+<td align="center">Cattaraugus County</td>
+<td align="center">36009</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">-17%</td>
+</tr>
+<tr class="even">
+<td align="center">IA</td>
+<td align="center">Story County</td>
+<td align="center">19169</td>
+<td align="center">8</td>
+<td align="center">7</td>
+<td align="center">14%</td>
+</tr>
+<tr class="odd">
+<td align="center">TX</td>
+<td align="center">Smith County</td>
+<td align="center">48423</td>
+<td align="center">8</td>
+<td align="center">7</td>
+<td align="center">14%</td>
+</tr>
+<tr class="even">
+<td align="center">WA</td>
+<td align="center">Chelan County</td>
+<td align="center">53007</td>
+<td align="center">8</td>
+<td align="center">7</td>
+<td align="center">14%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Franklin County</td>
+<td align="center">18047</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">12%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Vigo County</td>
+<td align="center">18167</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">12%</td>
+</tr>
+<tr class="odd">
+<td align="center">MO</td>
+<td align="center">Cass County</td>
+<td align="center">29037</td>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">12%</td>
+</tr>
+<tr class="even">
+<td align="center">WA</td>
+<td align="center">Grant County</td>
+<td align="center">53025</td>
+<td align="center">7</td>
+<td align="center">8</td>
+<td align="center">-12%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Cass County</td>
+<td align="center">18017</td>
+<td align="center">10</td>
+<td align="center">9</td>
+<td align="center">11%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Scott County</td>
+<td align="center">18143</td>
+<td align="center">10</td>
+<td align="center">9</td>
+<td align="center">11%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Tippecanoe County</td>
+<td align="center">18157</td>
+<td align="center">10</td>
+<td align="center">9</td>
+<td align="center">11%</td>
+</tr>
+<tr class="even">
+<td align="center">IN</td>
+<td align="center">Newton County</td>
+<td align="center">18111</td>
+<td align="center">11</td>
+<td align="center">10</td>
+<td align="center">10%</td>
+</tr>
+<tr class="odd">
+<td align="center">IN</td>
+<td align="center">Perry County</td>
+<td align="center">18123</td>
+<td align="center">11</td>
+<td align="center">10</td>
+<td align="center">10%</td>
+</tr>
+<tr class="even">
+<td align="center">VA</td>
+<td align="center">Carroll County</td>
+<td align="center">51035</td>
+<td align="center">9</td>
+<td align="center">10</td>
+<td align="center">-10%</td>
+</tr>
+<tr class="odd">
+<td align="center">VA</td>
+<td align="center">Southampton County</td>
+<td align="center">51175</td>
+<td align="center">10</td>
+<td align="center">11</td>
+<td align="center">-9%</td>
+</tr>
+<tr class="even">
+<td align="center">WA</td>
+<td align="center">Island County</td>
+<td align="center">53029</td>
+<td align="center">12</td>
+<td align="center">11</td>
+<td align="center">9%</td>
+</tr>
+<tr class="odd">
+<td align="center">NE</td>
+<td align="center">Hamilton County</td>
+<td align="center">31081</td>
+<td align="center">13</td>
+<td align="center">12</td>
+<td align="center">8%</td>
+</tr>
+<tr class="even">
+<td align="center">SC</td>
+<td align="center">Aiken County</td>
+<td align="center">45003</td>
+<td align="center">13</td>
+<td align="center">12</td>
+<td align="center">8%</td>
+</tr>
+<tr class="odd">
+<td align="center">UT</td>
+<td align="center">Weber County</td>
+<td align="center">49057</td>
+<td align="center">15</td>
+<td align="center">14</td>
+<td align="center">7%</td>
+</tr>
+<tr class="even">
+<td align="center">TX</td>
+<td align="center">Rockwall County</td>
+<td align="center">48397</td>
+<td align="center">17</td>
+<td align="center">16</td>
+<td align="center">6%</td>
+</tr>
+<tr class="odd">
+<td align="center">WI</td>
+<td align="center">Ozaukee County</td>
+<td align="center">55089</td>
+<td align="center">17</td>
+<td align="center">16</td>
+<td align="center">6%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
