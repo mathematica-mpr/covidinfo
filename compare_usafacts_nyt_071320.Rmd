@@ -38,6 +38,8 @@ format_names <- function(dat){
   dat %>% set_names(n)
 }
 
+last_update_str <- "Date updated: 7/13/2020 (data downloaded: 7/14/2020)"
+
 # load data
 dat_nyt <- read_csv(file.path("data","NYT_data_071420.csv"))
 
@@ -75,6 +77,8 @@ The data for each of the two sources are gathered from state and local public he
 
 
 ## Section 1: Comparison of total national cases and deaths over time {.tabset}
+`r last_update_str`
+
 ```{r}
 nyt_total <- dat_nyt %>% filter(state!="Puerto Rico") %>%
   group_by(date) %>% 
@@ -143,6 +147,8 @@ bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, death
 ```
 
 ## Section 2: Comparison of unallocated cases
+`r last_update_str`
+
 ```{r}
 nyt_unknown <- dat_nyt %>% filter(county=="Unknown") %>% filter(date==max(date)) %>% 
   select(state, cases, deaths) %>% mutate(source="NYT") %>%
@@ -205,6 +211,7 @@ dat_usafacts_deaths <- dat_usafacts_deaths %>% filter(!fips %in% c("00000","0000
 ```
 
 ## Section 3: Comparison of counties with reported cases in the two data sets
+`r last_update_str`
 
 ### Counties (FIPs codes) in NYT but not in USAFacts
 
@@ -245,6 +252,8 @@ dat_usafacts_cases %>% anti_join(dat_nyt, by="fips") %>% filter(cases!=0) %>%
 ```
 
 ## Section 4: Comparison of cumulative cases for all counties that appear in both data sets
+`r last_update_str`
+
 ```{r}
 bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(source="NYT"),
           dat_usafacts_cases %>% select(date, fips, cases) %>% mutate(source="USAFacts")) %>%
@@ -308,6 +317,8 @@ case_diff_tab %>%
 ```
 
 ## Section 5: Comparison of cumulative deaths for all counties that appear in both data sets
+`r last_update_str`
+
 ```{r}
 bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(source="NYT"),
           dat_usafacts_deaths %>% select(date, fips, deaths) %>% mutate(source="USAFacts")) %>%
