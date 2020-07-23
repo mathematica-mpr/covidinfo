@@ -1,7 +1,9 @@
 ---
 output: html_document
-title: "A xomparison of COVID case and death counts from USAFacts and New York Times (7/13/20)"
+title: "Case Study"
 ---
+
+# A comparison of COVID case and death counts from USAFacts and New York Times (7/13/20)
 
 <style type="text/css">
 .navbar-header  {
