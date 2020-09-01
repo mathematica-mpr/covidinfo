@@ -4,8 +4,11 @@ title: "COVID-19 Data and Resources"
 ---
 
 <style type="text/css">
-.navbar-header  {
-    margin-left: -280px !important;
+.container {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 .main-container {
   max-width: 1750px;
