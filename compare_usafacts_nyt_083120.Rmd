@@ -92,7 +92,7 @@ usafacts_total = full_join(usafacts_total_cases, usafacts_total_deaths, by="date
 ### Cases
 The following plot shows daily cumulative case counts for each of the two data sources, as well as the difference in case counts (NYT-USAFacts) and percentage difference in case counts (NYT-USAFacts)/USAFacts over time.
 
-The case counts reported in the two sources are similar, and have gotten more similar in the past couple months. During the month of August, NYT consistantly reported approximately 0.6% more cases than USAFacts, compared to a difference of 1% throughout May and June.
+The case counts reported in the two sources are similar, and have gotten more similar in the past couple months. During the month of August, NYT consistently reported approximately 0.6% more cases than USAFacts, compared to a difference of 1% throughout May and June.
 
 ```{r, fig.height=8, fig.width=10}
 g <- bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source, cases) %>% 
@@ -211,7 +211,7 @@ g <- bind_rows(nyt_GA_un, usafacts_GA_un) %>%
 ggplotly(g)
 ```
 
-#### Cummulative cases in Georgia over time
+#### Cumulative cases in Georgia over time
 ```{r}
 nyt_GA <- dat_nyt %>% filter(state=="Georgia") %>% group_by(date) %>% summarise(cases=sum(cases)) %>%
   select(date, cases) %>% mutate(source="NYT")
