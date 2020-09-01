@@ -21,6 +21,7 @@ library(tidyverse)
 library(lubridate)
 library(pander)
 library(ggrepel)
+library(plotly)
 
 library(plotMPR) # internal Mathematica (MPR) package for ggplot theme
 
@@ -94,7 +95,7 @@ The following plot shows daily cumulative case counts for each of the two data s
 While the case counts reported in the two sources are similar. NYT tends to report about 1% more cases than USAFacts.
 
 ```{r, fig.height=8, fig.width=10}
-bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source, cases) %>% 
+g <- bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source, cases) %>% 
   filter(date>=date("2020-04-01")) %>%
   mutate(difference = NYT-USAFacts,
          percent_difference = 100*(NYT-USAFacts)/USAFacts) %>%
@@ -116,6 +117,8 @@ bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source, case
   theme_mpr() + 
   scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
+
+ggplotly(g, tooltip = c("y"))
 ```
 
 ### Deaths
@@ -124,7 +127,7 @@ The following plot shows daily cumulative death counts for each of the two data 
 While the death counts reported in the two sources are similar. NYT has tends to report about 1% more cases than USAFacts. The difference in death counts between the two sources has stayed relatively steady since early May.
 
 ```{r, fig.height=8, fig.width=10}
-bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, deaths) %>% 
+g <- bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, deaths) %>% 
   filter(date>=date("2020-04-01")) %>%
   mutate(difference = NYT-USAFacts,
          percent_difference = 100*(NYT-USAFacts)/USAFacts) %>%
@@ -144,6 +147,7 @@ bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, death
   theme_mpr() + 
   scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip="y")
 ```
 
 ## Section 2: Comparison of unallocated cases
@@ -172,7 +176,7 @@ usafacts_unknown <- bind_rows(usafacts_unknown_cases, usafacts_unknown_deaths) %
 This plot shows only states where there are unallocated cases or deaths in either data source.
 
 ```{r, fig.height=8, fig.width=10}
-bind_rows(nyt_unknown, usafacts_unknown) %>% filter(cases>0) %>%
+g <- bind_rows(nyt_unknown, usafacts_unknown) %>% filter(cases>0) %>%
   arrange(desc(cases)) %>% 
   mutate(state = fct_rev(fct_relevel(as.factor(state), unique(.$state)))) %>%
   spread(source, cases) %>% mutate_at(c("USAFacts","NYT"), ~ifelse(is.na(.),0,.)) %>%
@@ -186,8 +190,9 @@ bind_rows(nyt_unknown, usafacts_unknown) %>% filter(cases>0) %>%
 
   xlab("State") + ylab("Number of unallocated cases") + labs(fill="") +
   theme_mpr() + 
-  scale_color_mpr(type = "qual", discrete = TRUE) +
+  #scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip=c("x","y"))
 ```
 
 ### Deaths categorized as New York City unallocated in USAFacts
@@ -291,19 +296,22 @@ case_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(sour
 
 #### Plot
 ```{r}
-case_diff_tab %>% 
-  mutate(abs_diff = abs(NYT-USAFacts)) %>%
-  ggplot(aes(x=NYT, y=USAFacts)) + 
+g<-case_diff_tab %>% 
+  mutate(abs_diff = abs(NYT-USAFacts),
+         county = paste0(county,", ",state)) %>%
+  ggplot(aes(x=NYT, y=USAFacts, label=county)) + 
   geom_point() + geom_abline(linetype="dashed") +
   geom_abline(slope = .95, linetype="dotted") +
   geom_abline(slope = 1.05, linetype="dotted") +
-  geom_text_repel(data = . %>% filter(rank(-1*abs_diff)<=5), 
-                   aes(label=county), size=2, direction="x") +
+  #geom_text_repel(data = . %>% filter(rank(-1*abs_diff)<=5), 
+  #                 aes(label=county), size=2, direction="x") +
   xlim(0,27800) + ylim(0,27800) + coord_equal() +
     xlab("Cases reported in NYT") + ylab("Cases reported in USAFacts") +
   theme_mpr() + 
   scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
+
+ggplotly(g, tooltip = "label")
 ```
 
 #### Table
@@ -356,19 +364,21 @@ death_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(so
 
 #### Plot
 ```{r}
-death_diff_tab %>%
-  mutate(abs_diff = abs(NYT-USAFacts)) %>%
-  ggplot(aes(x=NYT, y=USAFacts)) + 
+g<-death_diff_tab %>%
+  mutate(abs_diff = abs(NYT-USAFacts),
+         county = paste0(county, ", ", state)) %>%
+  ggplot(aes(x=NYT, y=USAFacts, label=county)) + 
   geom_point() + geom_abline(linetype="dashed") +
   geom_abline(slope = .95, linetype="dotted") +
   geom_abline(slope = 1.05, linetype="dotted") +
-  geom_text_repel(data = . %>% filter(rank(-1*abs_diff)<=5), 
-                   aes(label=county), size=2, direction="x") +
+  #geom_text_repel(data = . %>% filter(rank(-1*abs_diff)<=5), 
+  #                 aes(label=county), size=2, direction="x") +
   xlim(0,2750) + ylim(0,2750) + coord_equal() +
   xlab("Deaths reported in NYT") + ylab("Deaths reported in USAFacts") +
   theme_mpr() + 
   scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip="label")
 ```
 
 #### Table
