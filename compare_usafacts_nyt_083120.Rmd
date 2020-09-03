@@ -115,8 +115,8 @@ g <- bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source,
   ggtitle("Comparison of national cases reported by each source",
           "April 1st, 2020 onward") +
   theme_mpr() + 
-  scale_color_mpr(type = "qual", discrete = TRUE) +
-  scale_fill_mpr(type = "qual", discrete = TRUE)
+  scale_color_mpr(type = "qual", discrete = TRUE)
+  #scale_fill_mpr(type = "qual", discrete = TRUE)
 
 ggplotly(g, tooltip = c("y"))
 ```
@@ -206,8 +206,8 @@ g <- bind_rows(nyt_GA_un, usafacts_GA_un) %>%
   ggplot(aes(x=date, y=cases, color=source)) + geom_line() +
   labs(color="") +
   theme_mpr() + 
-  scale_color_mpr(type = "qual", discrete = TRUE) +
-  scale_fill_mpr(type = "qual", discrete = TRUE)
+  scale_color_mpr(type = "qual", discrete = TRUE)
+  #scale_fill_mpr(type = "qual", discrete = TRUE)
 ggplotly(g)
 ```
 
