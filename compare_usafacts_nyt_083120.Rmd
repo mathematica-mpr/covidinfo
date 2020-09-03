@@ -24,6 +24,7 @@ library(ggrepel)
 library(plotly)
 
 library(plotMPR) # internal Mathematica (MPR) package for ggplot theme
+library(scales)
 
 # load fonts for theme_mpr for plots 
 #extrafont::font_import() 
@@ -107,18 +108,19 @@ g <- bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source,
                          source=="USAFacts"~"USAFacts",
                          T~"Comparison"),
          color=fct_rev(color)) %>%
-  ggplot(aes(x=date, y=cases, color=color)) + geom_line() + 
+  ggplot(aes(x=date, y=cases, color=color, text=cases)) + geom_line() + 
   geom_hline(yintercept=0, linetype="dotted") +
-  facet_grid(panel~., scale="free_y") +
+  facet_grid(panel~., scale="free_y", switch="y") +
   labs(color="") + ylab("") +
   
   ggtitle("Comparison of national cases reported by each source",
           "April 1st, 2020 onward") +
   theme_mpr() + 
+  scale_y_continuous(label=comma) +
   scale_color_mpr(type = "qual", discrete = TRUE)
   #scale_fill_mpr(type = "qual", discrete = TRUE)
 
-ggplotly(g, tooltip = c("y"))
+ggplotly(g, tooltip = c("text"))
 ```
 
 ### Deaths
@@ -139,15 +141,16 @@ g <- bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, 
                          source=="USAFacts"~"USAFacts",
                          T~"Comparison"),
          color=fct_rev(color)) %>%
-  ggplot(aes(x=date, y=deaths, color=color)) + geom_line() + geom_hline(yintercept=0, linetype="dotted") +
+  ggplot(aes(x=date, y=deaths, color=color, text=deaths)) + geom_line() + geom_hline(yintercept=0, linetype="dotted") +
   facet_grid(panel~., scale="free_y") + 
   labs(color="") + ylab("") +
   ggtitle("Comparison of national deaths reported by each source",
           "April 1st, 2020 onward") +
   theme_mpr() + 
+  scale_y_continuous(label=comma) +
   scale_color_mpr(type = "qual", discrete = TRUE)
   #scale_fill_mpr(type = "qual", discrete = TRUE)
-ggplotly(g, tooltip="y")
+ggplotly(g, tooltip="text")
 ```
 
 ## Section 2: Comparison of unallocated cases
@@ -181,14 +184,14 @@ g <- bind_rows(nyt_unknown, usafacts_unknown) %>% filter(cases>0) %>%
   mutate(state = fct_rev(fct_relevel(as.factor(state), unique(.$state)))) %>%
   spread(source, cases) %>% mutate_at(c("USAFacts","NYT"), ~ifelse(is.na(.),0,.)) %>%
   gather("source","cases",c("USAFacts","NYT")) %>%
-  rename(Cases=cases, Deaths=deaths) %>%
-  gather("var","val", c("Cases","Deaths")) %>% 
+  rename(Cases=cases, Deaths=deaths, State=state) %>%
+  gather("var","Unallocated", c("Cases","Deaths")) %>% 
   
-  ggplot(aes(x=state, y=val, fill=source)) +
+  ggplot(aes(x=State, y=Unallocated, fill=source)) +
   geom_col(position = position_dodge()) + 
   coord_flip() + facet_grid(.~var, scale="free") +
 
-  xlab("State") + ylab("Number of unallocated cases") + labs(fill="") +
+  xlab("") + ylab("Number of unallocated cases") + labs(fill="") +
   theme_mpr() + 
   #scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
@@ -203,12 +206,13 @@ nyt_GA_un <- dat_nyt %>% filter(county=="Unknown", state=="Georgia") %>% select(
 usafacts_GA_un <- dat_usafacts_cases %>% filter(fips=="00000", state=="GA") %>% select(date, cases) %>% mutate(source="USAFacts")  
 
 g <- bind_rows(nyt_GA_un, usafacts_GA_un) %>%
-  ggplot(aes(x=date, y=cases, color=source)) + geom_line() +
-  labs(color="") +
+  ggplot(aes(x=date, y=cases, color=source, text=cases)) + geom_line() +
+  labs(color="") + xlab("Date") + ylab("Unallocated cases") +
   theme_mpr() + 
+  scale_y_continuous(label=comma) +
   scale_color_mpr(type = "qual", discrete = TRUE)
   #scale_fill_mpr(type = "qual", discrete = TRUE)
-ggplotly(g)
+ggplotly(g, tooltip = "text")
 ```
 
 #### Cumulative cases in Georgia over time
@@ -220,12 +224,13 @@ usafacts_GA <- dat_usafacts_cases %>% filter(state=="GA") %>%
   select(date, cases) %>% mutate(source="USAFacts")  
 
 g <- bind_rows(nyt_GA, usafacts_GA) %>%
-  ggplot(aes(x=date, y=cases, color=source)) + geom_line() +
-  labs(color="") +
+  ggplot(aes(x=date, y=cases, color=source, text=cases)) + geom_line() +
+  labs(color="") + xlab("Date") + ylab("Cases") +
+  scale_y_continuous(label=comma) +
   theme_mpr() + 
   scale_color_mpr(type = "qual", discrete = TRUE)
   #scale_fill_mpr(type = "qual", discrete = TRUE)
-ggplotly(g)
+ggplotly(g, tooltip=c("text"))
 ```
 
 ### Deaths categorized as New York City unallocated in USAFacts
@@ -291,20 +296,26 @@ dat_usafacts_cases %>% anti_join(dat_nyt, by="fips") %>% filter(cases!=0) %>%
 `r last_update_str`
 
 ```{r}
-bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(source="NYT"),
+g<-bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(source="NYT"),
           dat_usafacts_cases %>% select(date, fips, cases) %>% mutate(source="USAFacts")) %>%
   filter(date==max(date), cases>0) %>%
   spread(source, cases) %>% 
   filter(fips %in% c(dat_nyt$fips) & fips %in% c(dat_usafacts_cases$fips)) %>%
   mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>% 
-  ggplot(aes(x=NYT, y=USAFacts)) + geom_point(size=.5) +
+  left_join(dat_usafacts_cases %>% select(state, county, fips) %>% distinct(), by="fips") %>%
+  mutate(county = paste0(county,", ",state)) %>%
+  
+  ggplot(aes(x=NYT, y=USAFacts, text=county)) + geom_point(size=.5) +
   
   ggtitle("Comparison of cases reported in NYT and in USAFacts", 
                        "For counties included in both sources")+
   xlab("Cases reported in NYT") + ylab("Cases reported in USAFacts") +
   theme_mpr() + 
+  scale_x_continuous(label=comma) +
+  scale_y_continuous(label=comma) +
   scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip=c("text","x","y"))
 ```
 
 ### Counties where the case count in USAFacts differs from the case count in NYT by more than 5% {.tabset}
@@ -317,7 +328,7 @@ case_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(sour
   filter(date==max(date)) %>%
   spread(source, cases) %>%
   mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>%
-    mutate(percent_difference = ifelse(USAFacts==0, ifelse(NYT==0, 0, Inf), (NYT-USAFacts)/USAFacts),
+  mutate(percent_difference = ifelse(USAFacts==0, ifelse(NYT==0, 0, Inf), (NYT-USAFacts)/USAFacts),
          percent_difference = round(percent_difference, 3)) %>% 
   filter(percent_difference!=0) %>% arrange(desc(abs(percent_difference))) %>%
   left_join(dat_usafacts_cases %>% select(state, county, fips) %>% distinct(), by="fips") %>%
@@ -330,19 +341,21 @@ case_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(sour
 g<-case_diff_tab %>% 
   mutate(abs_diff = abs(NYT-USAFacts),
          county = paste0(county,", ",state)) %>%
-  ggplot(aes(x=NYT, y=USAFacts, label=county)) + 
+  ggplot(aes(x=NYT, y=USAFacts, label=county, text=county)) + 
   geom_point() + geom_abline(linetype="dashed") +
   geom_abline(slope = .95, linetype="dotted") +
   geom_abline(slope = 1.05, linetype="dotted") +
   #geom_text_repel(data = . %>% filter(rank(-1*abs_diff)<=5), 
   #                 aes(label=county), size=2, direction="x") +
-  xlim(0,27800) + ylim(0,27800) + coord_equal() +
-    xlab("Cases reported in NYT") + ylab("Cases reported in USAFacts") +
-  theme_mpr() + 
+  coord_equal() +
+  xlab("Cases reported in NYT") + ylab("Cases reported in USAFacts") +
+  theme_mpr() +
+  scale_x_continuous(label=comma, limits=c(0,27800)) +
+  scale_y_continuous(label=comma, limits=c(0,27800)) +
   scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
 
-ggplotly(g, tooltip = "label")
+ggplotly(g, tooltip = c("text","x","y"))
 ```
 
 #### Table
@@ -359,20 +372,26 @@ case_diff_tab %>%
 `r last_update_str`
 
 ```{r}
-bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(source="NYT"),
+g <- bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(source="NYT"),
           dat_usafacts_deaths %>% select(date, fips, deaths) %>% mutate(source="USAFacts")) %>%
   filter(date==max(date), deaths>0) %>%
   spread(source, deaths) %>% 
   filter(fips %in% c(dat_nyt$fips) & fips %in% c(dat_usafacts_deaths$fips)) %>%
   mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>% 
-  ggplot(aes(x=NYT, y=USAFacts)) + geom_point(size=.5) +
+  left_join(dat_usafacts_cases %>% select(state, county, fips) %>% distinct(), by="fips") %>%
+  mutate(county = paste0(county,", ",state)) %>%
+  
+  ggplot(aes(x=NYT, y=USAFacts, text=county)) + geom_point(size=.5) +
   
   ggtitle("Comparison of deaths reported in NYT and in USAFacts", 
                        "For counties included in both sources") +
   xlab("Deaths reported in NYT") + ylab("Deaths reported in USAFacts") +
   theme_mpr() + 
+  scale_x_continuous(label=comma) +
+  scale_y_continuous(label=comma) +
   scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip=c("text","x","y"))
 ```
 
 ### Counties where the death count in USAFacts differs from the death count in NYT by more than 5% {.tabset}
@@ -398,18 +417,20 @@ death_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(so
 g<-death_diff_tab %>%
   mutate(abs_diff = abs(NYT-USAFacts),
          county = paste0(county, ", ", state)) %>%
-  ggplot(aes(x=NYT, y=USAFacts, label=county)) + 
+  ggplot(aes(x=NYT, y=USAFacts, label=county, text=county)) + 
   geom_point() + geom_abline(linetype="dashed") +
   geom_abline(slope = .95, linetype="dotted") +
   geom_abline(slope = 1.05, linetype="dotted") +
   #geom_text_repel(data = . %>% filter(rank(-1*abs_diff)<=5), 
   #                 aes(label=county), size=2, direction="x") +
-  xlim(0,2750) + ylim(0,2750) + coord_equal() +
+  coord_equal() +
   xlab("Deaths reported in NYT") + ylab("Deaths reported in USAFacts") +
   theme_mpr() + 
+  scale_x_continuous(label=comma, limits=c(0,2750)) +
+  scale_y_continuous(label=comma, limits=c(0, 2750)) +
   scale_color_mpr(type = "qual", discrete = TRUE) +
   scale_fill_mpr(type = "qual", discrete = TRUE)
-ggplotly(g, tooltip="label")
+ggplotly(g, tooltip=c("text","x","y"))
 ```
 
 #### Table
