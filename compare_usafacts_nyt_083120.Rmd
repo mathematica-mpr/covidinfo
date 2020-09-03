@@ -78,7 +78,7 @@ The data for each of the two sources are gathered from state and local public he
 3) **Other differences:** See the blog post linked above for more information on the differences between the data sources.
 
 
-## Section 1: Comparison of total national cases and deaths over time {.tabset}
+## Section 1: Comparison of total national cases and deaths over time
 `r last_update_str`
 
 ```{r}
