@@ -200,12 +200,14 @@ ggplotly(g, tooltip=c("x","y"))
 
 ### A closer look at Georgia
 
+USAFacts reports around 19,000 cumulative cases in Georgia that are not attributed to any county, compared to only 2,500 such cases in NYT. Correspondingly, USAFacts reports approximately 16,500 more cases for the state of Georgia compared to USAFacts (the two data sources report similar numbers of cases for each county in Georgia).
+
 #### Unallocated cases in Georgia over time
 ```{r}
 nyt_GA_un <- dat_nyt %>% filter(county=="Unknown", state=="Georgia") %>% select(date, cases) %>% mutate(source="NYT")
 usafacts_GA_un <- dat_usafacts_cases %>% filter(fips=="00000", state=="GA") %>% select(date, cases) %>% mutate(source="USAFacts")  
 
-g <- bind_rows(nyt_GA_un, usafacts_GA_un) %>%
+bind_rows(nyt_GA_un, usafacts_GA_un) %>%
   ggplot(aes(x=date, y=cases, color=source, text=cases)) + geom_line() +
   labs(color="") + xlab("Date") + ylab("Unallocated cases") +
   theme_mpr() + 
@@ -233,6 +235,13 @@ g <- bind_rows(nyt_GA, usafacts_GA) %>%
 ggplotly(g, tooltip=c("text"))
 ```
 
+#### Cummulative cases in Georgia excluding unallocated
+```{r, results="asis"}
+rbind(dat_nyt %>% filter(state=="Georgia", !is.na(fips), date==max(date)) %>% 
+        summarise(source="NYT", cases=sum(cases)),
+      dat_usafacts_cases %>% filter(state=="GA", fips!="00000", date==max(date)) %>% 
+        summarise(source="USAFacts", cases=sum(cases))) %>% pandoc.table()
+```
 ### Deaths categorized as New York City unallocated in USAFacts
 There are currently only a handful of such deaths, and no such cases
 
