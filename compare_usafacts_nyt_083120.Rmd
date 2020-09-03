@@ -95,7 +95,7 @@ The following plot shows daily cumulative case counts for each of the two data s
 
 The case counts reported in the two sources are similar, and have gotten more similar in the past couple months. During the month of August, NYT consistently reported approximately 0.6% more cases than USAFacts, compared to a difference of 1% throughout May and June.
 
-```{r, fig.height=8, fig.width=10}
+```{r, fig.height=6, fig.width=10}
 g <- bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source, cases) %>% 
   filter(date>=date("2020-04-01")) %>%
   mutate(difference = NYT-USAFacts,
@@ -115,7 +115,7 @@ g <- bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source,
                                        comma(cases, accuracy=1))))) + 
   geom_line() + 
   geom_hline(yintercept=0, linetype="dotted") +
-  facet_grid(panel~., scale="free_y", switch="y") +
+  facet_wrap(panel~.,  ncol=1, scale="free_y") +
   labs(color="") + ylab("") +
   
   ggtitle("Comparison of national cases reported by each source",
@@ -133,7 +133,7 @@ The following plot shows daily cumulative death counts for each of the two data 
 
 While the death counts reported in the two sources are similar. NYT has tends to report about 1% more cases than USAFacts. The difference in death counts between the two sources has stayed relatively steady since early May.
 
-```{r, fig.height=8, fig.width=10}
+```{r, fig.height=6, fig.width=10}
 g <- bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, deaths) %>% 
   filter(date>=date("2020-04-01")) %>%
   mutate(difference = NYT-USAFacts,
@@ -151,7 +151,7 @@ g <- bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, 
                                        percent(deaths, scale=1, accuracy=.01), 
                                        comma(deaths, accuracy=1))))) + 
   geom_line() + geom_hline(yintercept=0, linetype="dotted") +
-  facet_grid(panel~., scale="free_y") + 
+  facet_wrap(panel~., ncol=1, scale="free_y") + 
   labs(color="") + ylab("") +
   ggtitle("Comparison of national deaths reported by each source",
           "April 1st, 2020 onward") +
