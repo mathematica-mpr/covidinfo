@@ -1,0 +1,478 @@
+---
+output: html_document
+title: "Case Study"
+---
+
+<style type="text/css">
+.navbar-header  {
+    margin-left: -280px !important;
+}
+.main-container {
+  max-width: 1750px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning=F, fig.align="center")
+
+library(tidyverse)
+library(lubridate)
+library(pander)
+library(ggrepel)
+library(plotly)
+
+library(plotMPR) # internal Mathematica (MPR) package for ggplot theme
+library(scales)
+
+# load fonts for theme_mpr for plots 
+#extrafont::font_import() 
+extrafont::loadfonts(device = "win",  quiet = TRUE)
+
+# format table names
+format_names <- function(dat){
+  n <- names(dat)
+  n <- ifelse(tolower(n)=="fips", "FIPS", n)
+  n <- gsub("_", " ", n)
+  n <- gsub("^(.)","\\U\\1", n, perl = TRUE)
+  
+  dat %>% set_names(n)
+}
+
+last_update_str <- "Date updated: 8/31/2020 (data downloaded: 9/01/2020)"
+
+# load data
+dat_nyt <- read_csv(file.path("data","NYT_data_090120.csv"))
+
+dat_usafacts_cases <- read_csv(file.path("data","covid_confirmed_usafacts_090120.csv")) %>%
+  gather(date, cases, names(.)[grepl("^\\d",names(.))]) %>%
+  rename(fips=countyFIPS, county='County Name', state=State) %>%
+  #filter(!fips %in% 0:1) %>%
+  mutate(fips = str_pad(fips, width=5, pad="0"),
+         date = mdy(date))
+
+dat_usafacts_deaths <- read_csv(file.path("data","covid_deaths_usafacts_090120.csv")) %>%
+  gather(date, deaths, names(.)[grepl("^\\d",names(.))]) %>%
+  rename(fips=countyFIPS, county='County Name', state=State) %>%
+  #filter(!fips %in% 0:1) %>%
+  mutate(fips = str_pad(fips, width=5, pad="0"),
+         date = mdy(date))
+```
+
+# {.tabset}
+There are several national-level aggregations of county-level COVID case and death data that researchers have to choose from. Each source has its own data collection methods, which can result in variations in numbers across sources.
+
+On this page, we explore to what extent the following two data sources for county-level cumulative counts of confirmed COVID-19 cases and deaths are comparable. In our comparison, we focus on cumulative case counts as of 8/31/2020 (data accessed on 9/01/2020).
+
+**New York Times (NYT)**: The New York times keeps maintains a [data set](https://github.com/nytimes/covid-19-data) reporting daily cumulative counts of COVID-19 cases and deaths.
+
+**USAFacts**: USAFacts also maintains a [data set](https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/) reporting daily cumulative counts of COVID-19 cases and deaths.
+
+The data for each of the two sources are gathered from state and local public health agencies, however there are some differences between the two sources in how the data is reported. This [blog post](https://source.opennews.org/articles/comparison-four-major-covid-19-data-sources/) reviews some of the major differences, for example:
+
+1) **Time of update:** NYT is updated once daily around 8am EDT with case and death counts from the previous day. USAFacts is updated once daily around 12am PDT (3am EDT) for cases from the previous day. Because USAFacts is updated before NYT, USAFacts generally reports lower case and death counts than NYT for a given day.
+
+2) **Geographic exceptions:** NYT reports cases for all five boroughs of New York city as a single area ("New York City"). USAFacts reports New York City cases separately for all five counties, though also has a category for “New York City Unallocated/Probable”. NYT reports all case for Kansas City in a single group ("Kansas City"). The case counts for the four counties that include parts of Kansas City represent only the parts of the counties that are outside of Kansas City. In the USAFacts data, all Kansas City cases are allocated to Jackson County.
+
+3) **Other differences:** See the blog post linked above for more information on the differences between the data sources.
+
+
+## Section 1: Comparison of total national cases and deaths over time
+`r last_update_str`
+
+```{r}
+nyt_total <- dat_nyt %>% filter(state!="Puerto Rico") %>%
+  group_by(date) %>% 
+  summarise(cases=sum(cases), deaths=sum(deaths), source="NYT") 
+usafacts_total_cases <- dat_usafacts_cases %>% group_by(date) %>% summarise(cases=sum(cases)) 
+usafacts_total_deaths <- dat_usafacts_deaths %>% group_by(date) %>% summarise(deaths=sum(deaths)) 
+usafacts_total = full_join(usafacts_total_cases, usafacts_total_deaths, by="date") %>% mutate(source="USAFacts")
+```
+
+### Cases
+The following plot shows daily cumulative case counts for each of the two data sources, as well as the difference in case counts (NYT-USAFacts) and percentage difference in case counts (NYT-USAFacts)/USAFacts over time.
+
+The case counts reported in the two sources are similar, and have gotten more similar in the past couple months. During the month of August, NYT consistently reported approximately 0.6% more cases than USAFacts, compared to a difference of 1% throughout May and June.
+
+```{r, fig.height=6, fig.width=10}
+g <- bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source, cases) %>% 
+  filter(date>=date("2020-04-01")) %>%
+  mutate(difference = NYT-USAFacts,
+         percent_difference = 100*(NYT-USAFacts)/USAFacts) %>%
+  gather(source, cases, c("NYT","USAFacts","difference","percent_difference")) %>%
+  mutate(panel=case_when(source=="difference"~"Difference",
+                         source=="percent_difference"~"Percent difference",
+                         T~"Cases"),
+         color=case_when(source=="NYT"~"NYT",
+                         source=="USAFacts"~"USAFacts",
+                         T~"Comparison"),
+         color=fct_rev(color)) %>%
+  
+  ggplot(aes(x=date, y=cases, color=color, group=1,
+             text=sprintf("%s", ifelse(source=="percent_difference", 
+                                       percent(cases, scale=1, accuracy=.01), 
+                                       comma(cases, accuracy=1))))) + 
+  geom_line() + 
+  geom_hline(yintercept=0, linetype="dotted") +
+  facet_wrap(panel~.,  ncol=1, scale="free_y") +
+  labs(color="") + ylab("") +
+  
+  ggtitle("Comparison of national cases reported by each source",
+          "April 1st, 2020 onward") +
+  theme_mpr() + 
+  scale_y_continuous(label=comma) +
+  scale_color_mpr(type = "qual", discrete = TRUE)
+  #scale_fill_mpr(type = "qual", discrete = TRUE)
+
+ggplotly(g, tooltip = c("text"))
+```
+
+### Deaths
+The following plot shows daily cumulative death counts for each of the two data sources, as well as the difference in death counts (NYT-USAFacts) and percentage difference in death counts (NYT-USAFacts)/USAFacts over time.
+
+While the death counts reported in the two sources are similar. NYT has tends to report about 1% more cases than USAFacts. The difference in death counts between the two sources has stayed relatively steady since early May.
+
+```{r, fig.height=6, fig.width=10}
+g <- bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, deaths) %>% 
+  filter(date>=date("2020-04-01")) %>%
+  mutate(difference = NYT-USAFacts,
+         percent_difference = 100*(NYT-USAFacts)/USAFacts) %>%
+  gather(source, deaths, c("NYT","USAFacts","difference","percent_difference")) %>%
+  mutate(panel=case_when(source=="difference"~"Difference",
+                         source=="percent_difference"~"Percent difference",
+                         T~"Cases"),
+         color=case_when(source=="NYT"~"NYT",
+                         source=="USAFacts"~"USAFacts",
+                         T~"Comparison"),
+         color=fct_rev(color)) %>%
+  ggplot(aes(x=date, y=deaths, color=color, group=1,
+             text=sprintf("%s", ifelse(source=="percent_difference", 
+                                       percent(deaths, scale=1, accuracy=.01), 
+                                       comma(deaths, accuracy=1))))) + 
+  geom_line() + geom_hline(yintercept=0, linetype="dotted") +
+  facet_wrap(panel~., ncol=1, scale="free_y") + 
+  labs(color="") + ylab("") +
+  ggtitle("Comparison of national deaths reported by each source",
+          "April 1st, 2020 onward") +
+  theme_mpr() + 
+  scale_y_continuous(label=comma) +
+  scale_color_mpr(type = "qual", discrete = TRUE)
+  #scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip="text")
+```
+
+## Section 2: Comparison of unallocated cases
+`r last_update_str`
+
+```{r}
+nyt_unknown <- dat_nyt %>% filter(county=="Unknown") %>% filter(date==max(date)) %>% 
+  select(state, cases, deaths) %>% mutate(source="NYT") %>%
+  filter(state!="Guam")
+
+usafacts_unknown_cases <- dat_usafacts_cases %>% filter(fips=="00000") %>% 
+  mutate(val=cases, var="cases") %>%
+  filter(date==max(date)) %>% select(state, var, val)
+
+usafacts_unknown_deaths <- dat_usafacts_deaths %>% filter(fips=="00000") %>% 
+  mutate(val=deaths, var="deaths") %>%
+  filter(date==max(date)) %>% select(state, var, val)
+
+usafacts_unknown <- bind_rows(usafacts_unknown_cases, usafacts_unknown_deaths) %>%
+  spread(var, val) %>% mutate(source="USAFacts") %>%
+  left_join(tibble(state_name = state.name, state = state.abb), by="state") %>%
+  mutate(state=state_name) %>% select(-state_name)
+```
+
+### Unallocated cases and deaths by state 
+This plot shows only states where there are unallocated cases or deaths in either data source.
+
+```{r, fig.height=8, fig.width=10}
+g <- bind_rows(nyt_unknown, usafacts_unknown) %>% filter(cases>0) %>%
+  arrange(desc(cases)) %>% 
+  mutate(state = fct_rev(fct_relevel(as.factor(state), unique(.$state)))) %>%
+  spread(source, cases) %>% mutate_at(c("USAFacts","NYT"), ~ifelse(is.na(.),0,.)) %>%
+  gather("source","cases",c("USAFacts","NYT")) %>%
+  rename(Cases=cases, Deaths=deaths, State=state) %>%
+  gather("var","Unallocated", c("Cases","Deaths")) %>% 
+  
+  ggplot(aes(x=State, y=Unallocated, fill=source, group=source,
+             text = sprintf("State: %s<br>Unallocated cases: %s", State, comma(Unallocated)))) +
+  geom_col(position = position_dodge()) + 
+  coord_flip() + facet_grid(.~var, scale="free") +
+
+  xlab("") + ylab("Number of unallocated cases") + labs(fill="") +
+  theme_mpr() + 
+  #scale_color_mpr(type = "qual", discrete = TRUE) +
+  scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip=c("text"))
+```
+
+### A closer look at Georgia
+
+USAFacts reports around 19,000 cumulative cases in Georgia that are not attributed to any county, compared to only 2,500 such cases in NYT. Correspondingly, USAFacts reports approximately 16,500 more cases for the state of Georgia compared to USAFacts (the two data sources report similar numbers of cases for each county in Georgia).
+
+#### Unallocated cases in Georgia over time
+```{r}
+nyt_GA_un <- dat_nyt %>% filter(county=="Unknown", state=="Georgia") %>% select(date, cases) %>% mutate(source="NYT")
+usafacts_GA_un <- dat_usafacts_cases %>% filter(fips=="00000", state=="GA") %>% select(date, cases) %>% mutate(source="USAFacts")  
+
+g<-bind_rows(nyt_GA_un, usafacts_GA_un) %>%
+  ggplot(aes(x=date, y=cases, color=source, group=1,
+             text=sprintf("%s", comma(cases)))) + geom_line() +
+  labs(color="") + xlab("Date") + ylab("Unallocated cases") +
+  theme_mpr() + 
+  scale_y_continuous(label=comma) +
+  scale_color_mpr(type = "qual", discrete = TRUE)
+  #scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip = "text")
+```
+
+#### Cumulative cases in Georgia over time
+```{r}
+nyt_GA <- dat_nyt %>% filter(state=="Georgia") %>% group_by(date) %>% summarise(cases=sum(cases)) %>%
+  select(date, cases) %>% mutate(source="NYT")
+usafacts_GA <- dat_usafacts_cases %>% filter(state=="GA") %>% 
+  group_by(date) %>% summarise(cases=sum(cases)) %>% 
+  select(date, cases) %>% mutate(source="USAFacts")  
+
+g <- bind_rows(nyt_GA, usafacts_GA) %>%
+  ggplot(aes(x=date, y=cases, color=source, group=1,
+             text=sprintf("%s", comma(cases)))) + geom_line() +
+  labs(color="") + xlab("Date") + ylab("Cases") +
+  scale_y_continuous(label=comma) +
+  theme_mpr() + 
+  scale_color_mpr(type = "qual", discrete = TRUE)
+  #scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip=c("text"))
+```
+
+#### Cummulative cases in Georgia excluding unallocated
+```{r, results="asis"}
+rbind(dat_nyt %>% filter(state=="Georgia", !is.na(fips), date==max(date)) %>% 
+        summarise(source="NYT", cases=sum(cases)),
+      dat_usafacts_cases %>% filter(state=="GA", fips!="00000", date==max(date)) %>% 
+        summarise(source="USAFacts", cases=sum(cases))) %>% pandoc.table()
+```
+### Deaths categorized as New York City unallocated in USAFacts
+There are currently only a handful of such deaths, and no such cases
+
+```{r, results="asis"}
+nyc_cases <- dat_usafacts_cases %>% filter(fips=="00001", date==max(date)) %>%
+  select(county, state, cases)
+nyc_deaths <- dat_usafacts_deaths %>% filter(fips=="00001", date==max(date)) %>%
+  select(county, state, deaths)
+
+inner_join(nyc_cases,nyc_deaths, by = c("county","state")) %>% 
+  format_names() %>% pandoc.table()
+```
+
+```{r}
+# now filter out unallocated
+dat_nyt <- dat_nyt %>% filter(!is.na(fips))
+dat_usafacts_cases <- dat_usafacts_cases %>% filter(!fips %in% c("00000","00001"))
+dat_usafacts_deaths <- dat_usafacts_deaths %>% filter(!fips %in% c("00000","00001"))
+```
+
+## Section 3: Comparison of counties with reported cases in the two data sets
+`r last_update_str`
+
+### Counties (FIPs codes) in NYT but not in USAFacts
+
+```{r}
+counties_nyt <- dat_nyt %>% select(fips, state, county) %>% distinct() %>% arrange(fips) 
+counties_usafacts <- dat_usafacts_cases %>% filter(cases!=0) %>%
+  select(fips, state, county) %>% distinct() %>% arrange(fips)
+```
+
+All county FIPS codes from the New York Times data are in the USAFacts data with the exception of FIPS codes corresponding to counties in Puerto Rico or other U.S. territories.
+
+```{r, results="asis"}
+dat_nyt %>% anti_join(dat_usafacts_cases, by="fips") %>% count(state, fips) %>% count(state) %>% 
+  set_names(c("State","# Counties in NYT but missing from USAFacts")) %>% 
+  format_names() %>% pandoc.table()
+```
+
+
+### Counties (FIPs codes) in USAFacts but not in NYT
+
+There are a few FIPs codes that appear in the USAFacts data but not in the NYT:
+
+- USAFacts has rows for each of five counties in New York City, whereas NYT has a single row for New York City
+
+- The Grand Princess cruise ship is included in USAFacts but not in NYT
+
+- USAFacts has a row for Hoonah-Angoon Census Area, while NYT does not
+
+
+```{r, results="asis"}
+dat_usafacts_cases %>% anti_join(dat_nyt, by="fips") %>% filter(cases!=0) %>%
+  group_by(state, county, fips) %>% 
+  summarise(cummulative_cases = max(cases), earliest_date = min(date), 
+            latest_date = max(date)) %>% 
+  format_names() %>% pandoc.table(split.table=Inf)
+```
+
+## Section 4: Comparison of cumulative cases for all counties that appear in both data sets
+`r last_update_str`
+
+```{r}
+g<-bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(source="NYT"),
+          dat_usafacts_cases %>% select(date, fips, cases) %>% mutate(source="USAFacts")) %>%
+  filter(date==max(date), cases>0) %>%
+  spread(source, cases) %>% 
+  filter(fips %in% c(dat_nyt$fips) & fips %in% c(dat_usafacts_cases$fips)) %>%
+  mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>% 
+  left_join(dat_usafacts_cases %>% select(state, county, fips) %>% distinct(), by="fips") %>%
+  mutate(county = paste0(county,", ",state)) %>%
+  
+  ggplot(aes(x=NYT, y=USAFacts, group=1,
+             text=sprintf("%s<br>NYT: %s<br>USAFacts: %s",
+                          county, comma(NYT), comma(USAFacts)))) + 
+  geom_point(size=.5) +
+  
+  ggtitle("Comparison of cases reported in NYT and in USAFacts", 
+                       "For counties included in both sources")+
+  xlab("Cases reported in NYT") + ylab("Cases reported in USAFacts") +
+  theme_mpr() + 
+  scale_x_continuous(label=comma) +
+  scale_y_continuous(label=comma) +
+  scale_color_mpr(type = "qual", discrete = TRUE) +
+  scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip=c("text"))
+```
+
+### Counties where the case count in USAFacts differs from the case count in NYT by more than 5% {.tabset}
+
+Percentage difference is defined relative to USAFacts ([NYT-USAFacts]/USAFacts).
+
+```{r}
+case_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(source="NYT"),
+          dat_usafacts_cases %>% select(date, fips, cases) %>% mutate(source="USAFacts")) %>%
+  filter(date==max(date)) %>%
+  spread(source, cases) %>%
+  mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>%
+  mutate(percent_difference = ifelse(USAFacts==0, ifelse(NYT==0, 0, Inf), (NYT-USAFacts)/USAFacts),
+         percent_difference = round(percent_difference, 3)) %>% 
+  filter(percent_difference!=0) %>% arrange(desc(abs(percent_difference))) %>%
+  left_join(dat_usafacts_cases %>% select(state, county, fips) %>% distinct(), by="fips") %>%
+  select(state, county, fips, NYT, USAFacts, percent_difference) %>%
+  filter(abs(percent_difference)>.05, NYT>0, USAFacts>0) 
+```
+
+#### Plot
+```{r}
+g<-case_diff_tab %>% 
+  mutate(abs_diff = abs(NYT-USAFacts),
+         county = paste0(county,", ",state)) %>%
+  ggplot(aes(x=NYT, y=USAFacts, label=county, group=1,
+             text=sprintf("%s<br>NYT: %s<br>USAFacts: %s",
+                          county, comma(NYT), comma(USAFacts)))) + 
+  geom_point() + geom_abline(linetype="dashed") +
+  geom_abline(slope = .95, linetype="dotted") +
+  geom_abline(slope = 1.05, linetype="dotted") +
+  #geom_text_repel(data = . %>% filter(rank(-1*abs_diff)<=5), 
+  #                 aes(label=county), size=2, direction="x") +
+  coord_equal() +
+  xlab("Cases reported in NYT") + ylab("Cases reported in USAFacts") +
+  theme_mpr() +
+  scale_x_continuous(label=comma, limits=c(0,27800)) +
+  scale_y_continuous(label=comma, limits=c(0,27800)) +
+  scale_color_mpr(type = "qual", discrete = TRUE) +
+  scale_fill_mpr(type = "qual", discrete = TRUE)
+
+ggplotly(g, tooltip = c("text"))
+```
+
+#### Table
+The following table is arranged in descending order of the absolute value of the difference between the two sources.
+```{r, results="asis"}
+case_diff_tab %>% 
+  arrange(desc(abs(NYT-USAFacts))) %>%
+  rename(county_USAFacts=county) %>%
+  mutate(percent_difference = paste0(round(100*percent_difference,0),"%")) %>% 
+  format_names() %>% pandoc.table(split.table=Inf)
+```
+
+## Section 5: Comparison of cumulative deaths for all counties that appear in both data sets
+`r last_update_str`
+
+```{r}
+g <- bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(source="NYT"),
+          dat_usafacts_deaths %>% select(date, fips, deaths) %>% mutate(source="USAFacts")) %>%
+  filter(date==max(date), deaths>0) %>%
+  spread(source, deaths) %>% 
+  filter(fips %in% c(dat_nyt$fips) & fips %in% c(dat_usafacts_deaths$fips)) %>%
+  mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>% 
+  left_join(dat_usafacts_cases %>% select(state, county, fips) %>% distinct(), by="fips") %>%
+  mutate(county = paste0(county,", ",state)) %>%
+  
+  ggplot(aes(x=NYT, y=USAFacts, group=1,
+             text=sprintf("%s<br>NYT: %s<br>USAFacts: %s",
+                          county, comma(NYT), comma(USAFacts)))) + geom_point(size=.5) +
+  
+  ggtitle("Comparison of deaths reported in NYT and in USAFacts", 
+                       "For counties included in both sources") +
+  xlab("Deaths reported in NYT") + ylab("Deaths reported in USAFacts") +
+  theme_mpr() + 
+  scale_x_continuous(label=comma) +
+  scale_y_continuous(label=comma) +
+  scale_color_mpr(type = "qual", discrete = TRUE) +
+  scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip=c("text"))
+```
+
+### Counties where the death count in USAFacts differs from the death count in NYT by more than 5% {.tabset}
+
+Percentage difference is defined relative to USAFacts ([NYT-USAFacts]/USAFacts).
+
+```{r}
+death_diff_tab <- bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(source="NYT"),
+          dat_usafacts_deaths %>% select(date, fips, deaths) %>% mutate(source="USAFacts")) %>%
+  filter(date==max(date)) %>%
+  spread(source, deaths) %>%
+  mutate_at(c("NYT","USAFacts"), ~ifelse(is.na(.), 0, .)) %>%
+  mutate(percent_difference = ifelse(USAFacts==0, ifelse(NYT==0, 0, Inf), (NYT-USAFacts)/USAFacts),
+         percent_difference = round(percent_difference, 3)) %>% 
+  filter(percent_difference!=0) %>% arrange(desc(abs(percent_difference))) %>%
+  left_join(dat_usafacts_deaths %>% select(state, county, fips) %>% distinct(), by="fips") %>%
+  select(state, county, fips, NYT, USAFacts, percent_difference) %>%
+  filter(abs(percent_difference)>.05, NYT>0, USAFacts>0)
+```
+
+#### Plot
+```{r}
+g<-death_diff_tab %>%
+  mutate(abs_diff = abs(NYT-USAFacts),
+         county = paste0(county, ", ", state)) %>%
+  ggplot(aes(x=NYT, y=USAFacts, label=county, group=1,
+             text=sprintf("%s<br>NYT: %s<br>USAFacts: %s",
+                          county, comma(NYT), comma(USAFacts)))) + 
+  geom_point() + geom_abline(linetype="dashed") +
+  geom_abline(slope = .95, linetype="dotted") +
+  geom_abline(slope = 1.05, linetype="dotted") +
+  #geom_text_repel(data = . %>% filter(rank(-1*abs_diff)<=5), 
+  #                 aes(label=county), size=2, direction="x") +
+  coord_equal() +
+  xlab("Deaths reported in NYT") + ylab("Deaths reported in USAFacts") +
+  theme_mpr() + 
+  scale_x_continuous(label=comma, limits=c(0,1000)) +
+  scale_y_continuous(label=comma, limits=c(0, 1000)) +
+  scale_color_mpr(type = "qual", discrete = TRUE) +
+  scale_fill_mpr(type = "qual", discrete = TRUE)
+ggplotly(g, tooltip=c("text"))
+```
+
+#### Table
+The following table is arranged in descending order of the absolute value of the difference between the two sources.
+
+```{r, results="asis"}
+death_diff_tab %>% 
+  arrange(desc(abs(NYT-USAFacts))) %>%
+  rename(county_USAFacts=county) %>%
+  mutate(percent_difference = paste0(round(100*percent_difference,0),"%")) %>% 
+  format_names() %>% pandoc.table(split.table=Inf)
+```
+
+
+

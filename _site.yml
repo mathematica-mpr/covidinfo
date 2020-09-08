@@ -8,7 +8,7 @@ navbar:
     - text: "Data Sources"
       href: data_sources.html
     - text: "Case Study"
-      href: compare_usafacts_nyt_071320.html
+      href: compare_usafacts_nyt_083120.html
 output:
   html_document:
     theme: flatly
