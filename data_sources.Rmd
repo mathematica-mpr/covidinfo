@@ -29,7 +29,7 @@ df <- read_csv(here("data/covid_resources.csv"))
 
 ```{r}
 dat_html <- df %>%
-  select(Category, `Source name`,  Link, 
+  select(Title, Category,  `Source name`,  Link, 
          Coverage, Aggregation, `Update frequency/date`, API) %>%
   filter(!is.na(`Source name`)) %>%
   mutate(API = if_else(API == 1, "Yes", "-"), 
