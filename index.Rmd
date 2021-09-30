@@ -66,7 +66,7 @@ data_cols <- df %>%
   select(-Action, -Category, - Title, -`Source name`, -`visualization name`,
          -Link, -`Data quality notes`, -`Content`, 
          -`Date posted on Mathematica's website`, -Coverage, 
-         -Aggregation, -`Update frequency/date`, -API, -`Internal?`) %>%
+         -Aggregation, -`Update frequency/date`, -API, -`Internal?`, -Other) %>%
   names(.)
 
 sn_df <- df %>%
