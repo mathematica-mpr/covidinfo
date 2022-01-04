@@ -72,17 +72,19 @@ data_cols <- df %>%
 sn_df <- df %>%
   select(`visualization name`, data_cols) %>% 
   filter(!is.na(`visualization name`)) %>%
-  mutate(Other = if_else(!is.na(Other), 1, 0)) %>%
+  #mutate(Other = if_else(!is.na(Other), 1, 0)) %>%
   pivot_longer(cols = data_cols, 
                names_to = "data_source", 
                values_to = "flag") %>%
   filter(!is.na(flag)) %>%
   # filter out loops 
-  filter(tolower(data_source) != tolower(`visualization name`)) %>% 
+  filter(tolower(data_source) != tolower(`visualization name`)) 
+
+#%>% 
   # make sure no sources with only "other" source 
-  group_by(`visualization name`) %>%
-  mutate(total_sources = n()) %>%
-  filter(! (total_sources == 1 & data_source == "Other"))
+ # group_by(`visualization name`) %>%
+  #mutate(total_sources = n())%>%
+  #filter(! (total_sources == 1 & data_source == "Other"))
 
 # define nodes
 nodes <- data.frame("name" = c(sn_df$data_source, sn_df$`visualization name`)) %>% unique()
