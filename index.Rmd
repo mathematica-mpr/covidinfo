@@ -19,7 +19,7 @@ title: "COVID-19 Data and Resources"
 
 ******
 
-This webpage is an interative tool to explore a curated list of COVID-19 data sources, tools, and other resources organized by [Mathematica](https://www.mathematica.org/).
+This webpage is an interactive tool to explore a curated list of COVID-19 data sources, tools, and other resources organized by [Mathematica](https://www.mathematica.org/).
 
 For detailed descriptions of all data sources, please visit Mathematica's [COVID-19 Curated Data, Modeling, and Policy Resources](https://www.mathematica.org/features/covid-19-curated-data-modeling-and-policy-resources) webpage.
 
