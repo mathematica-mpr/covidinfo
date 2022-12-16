@@ -23,7 +23,7 @@ library(pander)
 library(ggrepel)
 library(plotly)
 
-library(plotMPR) # internal Mathematica (MPR) package for ggplot theme
+#library(plotMPR) # internal Mathematica (MPR) package for ggplot theme
 library(scales)
 
 # load fonts for theme_mpr for plots 
@@ -120,9 +120,9 @@ g <- bind_rows(nyt_total, usafacts_total) %>% select(-deaths) %>% spread(source,
   
   ggtitle("Comparison of national cases reported by each source",
           "April 1st, 2020 onward") +
-  theme_mpr() + 
+  #theme_mpr() + 
   scale_y_continuous(label=comma) +
-  scale_color_mpr(type = "qual", discrete = TRUE)
+  scale_color_discrete(type = "qual")
   #scale_fill_mpr(type = "qual", discrete = TRUE)
 
 ggplotly(g, tooltip = c("text"))
@@ -155,9 +155,9 @@ g <- bind_rows(nyt_total, usafacts_total) %>% select(-cases) %>% spread(source, 
   labs(color="") + ylab("") +
   ggtitle("Comparison of national deaths reported by each source",
           "April 1st, 2020 onward") +
-  theme_mpr() + 
+  #theme_mpr() + 
   scale_y_continuous(label=comma) +
-  scale_color_mpr(type = "qual", discrete = TRUE)
+  scale_color_discrete(type = "qual")
   #scale_fill_mpr(type = "qual", discrete = TRUE)
 ggplotly(g, tooltip="text")
 ```
@@ -202,9 +202,9 @@ g <- bind_rows(nyt_unknown, usafacts_unknown) %>% filter(cases>0) %>%
   coord_flip() + facet_grid(.~var, scale="free") +
 
   xlab("") + ylab("Number of unallocated cases") + labs(fill="") +
-  theme_mpr() + 
+  #theme_mpr() + 
   #scale_color_mpr(type = "qual", discrete = TRUE) +
-  scale_fill_mpr(type = "qual", discrete = TRUE)
+  scale_fill_discrete(type = "qual")
 ggplotly(g, tooltip=c("text"))
 ```
 
@@ -221,9 +221,9 @@ g<-bind_rows(nyt_GA_un, usafacts_GA_un) %>%
   ggplot(aes(x=date, y=cases, color=source, group=1,
              text=sprintf("%s", comma(cases)))) + geom_line() +
   labs(color="") + xlab("Date") + ylab("Unallocated cases") +
-  theme_mpr() + 
+  #theme_mpr() + 
   scale_y_continuous(label=comma) +
-  scale_color_mpr(type = "qual", discrete = TRUE)
+  scale_color_discrete(type = "qual")
   #scale_fill_mpr(type = "qual", discrete = TRUE)
 ggplotly(g, tooltip = "text")
 ```
@@ -241,8 +241,8 @@ g <- bind_rows(nyt_GA, usafacts_GA) %>%
              text=sprintf("%s", comma(cases)))) + geom_line() +
   labs(color="") + xlab("Date") + ylab("Cases") +
   scale_y_continuous(label=comma) +
-  theme_mpr() + 
-  scale_color_mpr(type = "qual", discrete = TRUE)
+  #theme_mpr() + 
+  scale_color_discrete(type = "qual")
   #scale_fill_mpr(type = "qual", discrete = TRUE)
 ggplotly(g, tooltip=c("text"))
 ```
@@ -334,11 +334,11 @@ g<-bind_rows(dat_nyt %>% select(date, fips, cases) %>% mutate(source="NYT"),
   ggtitle("Comparison of cases reported in NYT and in USAFacts", 
                        "For counties included in both sources")+
   xlab("Cases reported in NYT") + ylab("Cases reported in USAFacts") +
-  theme_mpr() + 
+  #theme_mpr() + 
   scale_x_continuous(label=comma) +
   scale_y_continuous(label=comma) +
-  scale_color_mpr(type = "qual", discrete = TRUE) +
-  scale_fill_mpr(type = "qual", discrete = TRUE)
+  scale_color_discrete(type = "qual") +
+  scale_fill_discrete(type = "qual")
 ggplotly(g, tooltip=c("text"))
 ```
 
@@ -375,11 +375,11 @@ g<-case_diff_tab %>%
   #                 aes(label=county), size=2, direction="x") +
   coord_equal() +
   xlab("Cases reported in NYT") + ylab("Cases reported in USAFacts") +
-  theme_mpr() +
+  #theme_mpr() +
   scale_x_continuous(label=comma, limits=c(0,27800)) +
   scale_y_continuous(label=comma, limits=c(0,27800)) +
-  scale_color_mpr(type = "qual", discrete = TRUE) +
-  scale_fill_mpr(type = "qual", discrete = TRUE)
+  scale_color_discrete(type = "qual") +
+  scale_fill_discrete(type = "qual")
 
 ggplotly(g, tooltip = c("text"))
 ```
@@ -414,11 +414,11 @@ g <- bind_rows(dat_nyt %>% select(date, fips, deaths) %>% mutate(source="NYT"),
   ggtitle("Comparison of deaths reported in NYT and in USAFacts", 
                        "For counties included in both sources") +
   xlab("Deaths reported in NYT") + ylab("Deaths reported in USAFacts") +
-  theme_mpr() + 
+  #theme_mpr() + 
   scale_x_continuous(label=comma) +
   scale_y_continuous(label=comma) +
-  scale_color_mpr(type = "qual", discrete = TRUE) +
-  scale_fill_mpr(type = "qual", discrete = TRUE)
+  scale_color_discrete(type = "qual") +
+  scale_fill_discrete(type = "qual")
 ggplotly(g, tooltip=c("text"))
 ```
 
@@ -455,11 +455,11 @@ g<-death_diff_tab %>%
   #                 aes(label=county), size=2, direction="x") +
   coord_equal() +
   xlab("Deaths reported in NYT") + ylab("Deaths reported in USAFacts") +
-  theme_mpr() + 
+  #theme_mpr() + 
   scale_x_continuous(label=comma, limits=c(0,1000)) +
   scale_y_continuous(label=comma, limits=c(0, 1000)) +
-  scale_color_mpr(type = "qual", discrete = TRUE) +
-  scale_fill_mpr(type = "qual", discrete = TRUE)
+  scale_color_discrete(type = "qual") +
+  scale_fill_discrete(type = "qual")
 ggplotly(g, tooltip=c("text"))
 ```
 

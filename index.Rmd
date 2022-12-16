@@ -21,11 +21,11 @@ title: "COVID-19 Data and Resources"
 
 This webpage is an interactive tool to explore a curated list of COVID-19 data sources, tools, and other resources organized by [Mathematica](https://www.mathematica.org/).
 
-For detailed descriptions of all data sources, please visit Mathematica's [COVID-19 Curated Data, Modeling, and Policy Resources](https://www.mathematica.org/features/covid-19-curated-data-modeling-and-policy-resources) webpage.
+For descriptions of all data sources, please visit Mathematica's [COVID-19 Curated Data, Modeling, and Policy Resources](https://www.mathematica.org/features/covid-19-curated-data-modeling-and-policy-resources) webpage.
 
 ******
 
-The diagram below visualizes the flow of data sources (on the left) to resources that compile multiple data sources. It can be used to understand what primary data sources are underlying key COVID-19 resources. 
+The diagram below visualizes the flow of data sources (on the left) to resources that compile multiple data sources. It can be used to understand what primary data sources are underlying key COVID-19 resources. For a sortable table that includes details on each data source, see the [Data Sources Tab](https://mathematica-mpr.github.io/covidinfo/data_sources.html).
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.align='center')
